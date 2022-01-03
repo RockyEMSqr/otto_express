@@ -1,0 +1,34 @@
+{
+  "name": "otto_express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "DEBUG=1 node --inspect -r esbuild-register test/server.ts",
+    "test:swc": "node --inspect -r @swc/register test/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RockyEMSqr/otto_express.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RockyEMSqr/otto_express/issues"
+  },
+  "homepage": "https://github.com/RockyEMSqr/otto_express#readme",
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "express": "^4.17.2",
+    "express-session": "^1.17.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "connect-sqlite3": "^0.9.13",
+    "esbuild": "^0.14.10",
+    "esbuild-register": "^3.3.1",
+    "htm": "^3.1.0",
+    "preact-render-to-string": "^5.1.19"
+  }
+}
