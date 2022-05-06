@@ -2,10 +2,15 @@
   "name": "otto_express",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.module.js",
+  "umd:main": "dist/index.umd.js",
+  "unpkg": "dist/index.min.js",
+  "source": "index.ts",
   "scripts": {
     "test": "DEBUG=1 node --inspect -r esbuild-register test/server.ts",
-    "test:swc": "node --inspect -r @swc/register test/server.ts"
+    "test:swc": "node --inspect -r @swc/register test/server.ts",
+    "bundle": "tsc -p tsconfig_bundle.json"
   },
   "repository": {
     "type": "git",
