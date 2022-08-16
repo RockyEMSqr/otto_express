@@ -196,7 +196,7 @@ export abstract class JSONNotNamedController {
     }
 }
 export abstract class PaginatedAPIController extends JSONNotNamedController{
-    abstract getDS<DS=any>(req: any): DS//PaginatedDS<any, DataService>
+    abstract getDS(req: any)//PaginatedDS<any, DataService>
     abstract getFilterWhere<DS=any>(ds:DS, body):Promise<any>
     @Get('/paginate')
     async paginate(req, res){

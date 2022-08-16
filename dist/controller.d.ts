@@ -50,7 +50,7 @@ export declare abstract class JSONNotNamedController {
     _put(req: any, res: any): Promise<void>;
 }
 export declare abstract class PaginatedAPIController extends JSONNotNamedController {
-    abstract getDS<DS = any>(req: any): DS;
+    abstract getDS(req: any): any;
     abstract getFilterWhere<DS = any>(ds: DS, body: any): Promise<any>;
     paginate(req: any, res: any): Promise<void>;
     paginateFilter(req: any, res: any): Promise<void>;
