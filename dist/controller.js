@@ -1,4 +1,17 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -45,7 +58,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JSONNotNamedController = exports.JSONController = exports.CRUDController = exports.getMiddleWare = exports.Middleware = exports.Delete = exports.Put = exports.Post = exports.Get = exports.getHttpMethod = exports.getRoute = exports.Route = exports.getAutoMount = exports.AutoMount = exports.getController = exports.Controller = void 0;
+exports.PaginatedAPIController = exports.JSONNotNamedController = exports.JSONController = exports.CRUDController = exports.getMiddleWare = exports.Middleware = exports.Delete = exports.Put = exports.Post = exports.Get = exports.getHttpMethod = exports.getRoute = exports.Route = exports.getAutoMount = exports.AutoMount = exports.getController = exports.Controller = void 0;
 require("reflect-metadata");
 var RouteKey = 'Route';
 var ControllerKey = 'Contoller';
@@ -155,7 +168,7 @@ var CRUDController = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.getDS(req).list()];
                     case 1:
                         objs = _b.sent();
-                        res.render("".concat(this.viewFolder, "/index"), (_a = {}, _a[this.pluralObjName] = objs, _a));
+                        res.render(this.viewFolder + "/index", (_a = {}, _a[this.pluralObjName] = objs, _a));
                         return [2 /*return*/];
                 }
             });
@@ -164,7 +177,7 @@ var CRUDController = /** @class */ (function () {
     CRUDController.prototype._new = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                res.render("".concat(this.viewFolder, "/form"), {});
+                res.render(this.viewFolder + "/form", {});
                 return [2 /*return*/];
             });
         });
@@ -178,7 +191,7 @@ var CRUDController = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.getDS(req).findById(req.params.id)];
                     case 1:
                         obj = _b.sent();
-                        res.render("".concat(this.viewFolder, "/form"), (_a = {}, _a[this.objName] = obj, _a));
+                        res.render(this.viewFolder + "/form", (_a = {}, _a[this.objName] = obj, _a));
                         return [2 /*return*/];
                 }
             });
@@ -442,4 +455,95 @@ var JSONNotNamedController = /** @class */ (function () {
     return JSONNotNamedController;
 }());
 exports.JSONNotNamedController = JSONNotNamedController;
+var PaginatedAPIController = /** @class */ (function (_super) {
+    __extends(PaginatedAPIController, _super);
+    function PaginatedAPIController() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    PaginatedAPIController.prototype.paginate = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _b = (_a = res).json;
+                        return [4 /*yield*/, this.getDS(req).paginate(this.populate, Number(req.query.page), {}, Number(req.query.pageSize))];
+                    case 1:
+                        _b.apply(_a, [_c.sent()]);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    PaginatedAPIController.prototype.paginateFilter = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var where, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4 /*yield*/, this.getFilterWhere(req.ds, req.body)];
+                    case 1:
+                        where = _c.sent();
+                        console.log('FILTER WHERE', JSON.stringify(where));
+                        _b = (_a = res).json;
+                        return [4 /*yield*/, this.getDS(req).paginate(this.populate, Number(req.query.page), where, Number(req.query.pageSize), req.query.sortKey, Number(req.query.sortDir))];
+                    case 2:
+                        _b.apply(_a, [_c.sent()]);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    PaginatedAPIController.prototype.deleteThis = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getDS(req).deleteThisOne(req.body._id)];
+                    case 1:
+                        _a.sent();
+                        res.json({ ok: 1 });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    PaginatedAPIController.prototype.deleteThisOne = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getDS(req).deleteThisOne(req.params.id)];
+                    case 1:
+                        _a.sent();
+                        res.json({ ok: 1 });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    __decorate([
+        Get('/paginate'),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object, Object]),
+        __metadata("design:returntype", Promise)
+    ], PaginatedAPIController.prototype, "paginate", null);
+    __decorate([
+        Post('paginate/filter'),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object, Object]),
+        __metadata("design:returntype", Promise)
+    ], PaginatedAPIController.prototype, "paginateFilter", null);
+    __decorate([
+        Post('delete/'),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object, Object]),
+        __metadata("design:returntype", Promise)
+    ], PaginatedAPIController.prototype, "deleteThis", null);
+    __decorate([
+        Post('delete/:id'),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object, Object]),
+        __metadata("design:returntype", Promise)
+    ], PaginatedAPIController.prototype, "deleteThisOne", null);
+    return PaginatedAPIController;
+}(JSONNotNamedController));
+exports.PaginatedAPIController = PaginatedAPIController;
 //# sourceMappingURL=controller.js.map

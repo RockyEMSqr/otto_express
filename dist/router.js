@@ -87,8 +87,8 @@ function mountDir(app, dir, opts) {
             //console.log(key, mkey, typeof mem, mem && mem.constructor);
             //TODO(rocky): handle mem null better?
             if (mem && mem.constructor) {
-                var mount = (0, controller_1.getAutoMount)(mem);
-                var controller = (0, controller_1.getController)(mem);
+                var mount = controller_1.getAutoMount(mem);
+                var controller = controller_1.getController(mem);
                 if (mount || controller) {
                     setupController(app, mem, opts.area, opts.middleware);
                 }
@@ -111,7 +111,7 @@ function SetupArea(app, dir, area) {
             //console.log(key, mkey, typeof mem, mem && mem.constructor);
             //TODO(rocky): handle mem null better?
             if (mem && mem.constructor) {
-                var mount = (0, controller_1.getAutoMount)(mem);
+                var mount = controller_1.getAutoMount(mem);
                 if (mount) {
                     setupController(app, mem, area, preHanders);
                 }
@@ -148,12 +148,12 @@ function setupController(app, C, area) {
             return "continue";
         }
         //TODO: check if method is private?
-        var actionRoute = (0, controller_1.getRoute)(ctrl, name);
-        var controllerRoute = (0, controller_1.getRoute)(C);
-        var httpMethod = (0, controller_1.getHttpMethod)(ctrl, name); //|| 'get'; //default to a get
+        var actionRoute = controller_1.getRoute(ctrl, name);
+        var controllerRoute = controller_1.getRoute(C);
+        var httpMethod = controller_1.getHttpMethod(ctrl, name); //|| 'get'; //default to a get
         route = '/';
         if (area) {
-            route += "".concat(area, "/");
+            route += area + "/";
         }
         if (controllerRoute && controllerRoute != '/') {
             if (controllerRoute[0] == '/') {
@@ -180,7 +180,7 @@ function setupController(app, C, area) {
         }
         var allMiddleware = [].concat(preHandlers);
         //todo(rc): method middleware comes first?
-        var methodMiddleware = (0, controller_1.getMiddleWare)(ctrl, name);
+        var methodMiddleware = controller_1.getMiddleWare(ctrl, name);
         if (methodMiddleware) {
             if (Array.isArray(methodMiddleware)) {
                 allMiddleware = allMiddleware.concat.apply(allMiddleware, methodMiddleware);
@@ -189,7 +189,7 @@ function setupController(app, C, area) {
                 allMiddleware = allMiddleware.concat(methodMiddleware);
             }
         }
-        var controllerMiddleware = (0, controller_1.getMiddleWare)(C);
+        var controllerMiddleware = controller_1.getMiddleWare(C);
         if (controllerMiddleware) {
             if (Array.isArray(controllerMiddleware)) {
                 allMiddleware = allMiddleware.concat.apply(allMiddleware, controllerMiddleware);
@@ -230,7 +230,7 @@ function setupController(app, C, area) {
             });
         }
         if (process.env.DEBUG) {
-            console.log("method: ".concat(httpMethod, " \t ctrl: ").concat(controllerRoute, " \t action: ").concat(actionRoute || name, "\n route: ").concat(route, " --middleware: ").concat(allMiddleware.map(function (x) { return x.name; }).join(', ')));
+            console.log("method: " + httpMethod + " \t ctrl: " + controllerRoute + " \t action: " + (actionRoute || name) + "\n route: " + route + " --middleware: " + allMiddleware.map(function (x) { return x.name; }).join(', '));
         }
     };
     var route;

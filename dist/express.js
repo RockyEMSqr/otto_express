@@ -148,7 +148,7 @@ function createApp(configOrPath) {
                         // if (!existsSync(errViewP)) {
                         // 	errViewP = path.join(__dirname, '../../', 'views', 'error.pug');
                         // }
-                        return res.send("\n\t\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t\t")); //res.render(errViewP, vm);
+                        return res.send("\n\t\t\t\t\t\t<html><body>" + JSON.stringify(vm) + "</body></html>\n\t\t\t\t\t\t"); //res.render(errViewP, vm);
                     }
                 }
                 else {
@@ -161,7 +161,7 @@ function createApp(configOrPath) {
                             // if (!existsSync(errViewP)) {
                             // 	errViewP = path.join(__dirname, '../../', 'views', 'error.pug');
                             // }
-                            return res.send("\n\t\t\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t\t\t"));
+                            return res.send("\n\t\t\t\t\t\t\t<html><body>" + JSON.stringify(vm) + "</body></html>\n\t\t\t\t\t\t\t");
                         },
                         json: function () {
                             return res.json(vm);
@@ -186,7 +186,7 @@ function createApp(configOrPath) {
                     return res.json(vm);
                 }
                 else {
-                    return res.send("\n\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t"));
+                    return res.send("\n\t\t\t\t\t<html><body>" + JSON.stringify(vm) + "</body></html>\n\t\t\t\t\t");
                 }
             }
             else {
@@ -195,7 +195,7 @@ function createApp(configOrPath) {
                  */
                 return res.format({
                     html: function () {
-                        return res.send("\n\t\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t\t"));
+                        return res.send("\n\t\t\t\t\t\t<html><body>" + JSON.stringify(vm) + "</body></html>\n\t\t\t\t\t\t");
                     },
                     json: function () {
                         return res.json(vm);
