@@ -195,3 +195,34 @@ export abstract class JSONNotNamedController {
         res.json(obj);
     }
 }
+export abstract class PaginatedAPIController extends JSONNotNamedController{
+    abstract getDS<DS=any>(req: any): DS//PaginatedDS<any, DataService>
+    abstract getFilterWhere<DS=any>(ds:DS, body):Promise<any>
+    @Get('/paginate')
+    async paginate(req, res){
+        res.json(await this.getDS(req).paginate(this.populate, Number(req.query.page), {}, Number(req.query.pageSize)))
+    }
+    @Post('paginate/filter')
+    async paginateFilter(req, res){
+        let where = await this.getFilterWhere(req.ds, req.body);
+        console.log('FILTER WHERE', JSON.stringify(where));
+        res.json(await this.getDS(req).paginate(this.populate, Number(req.query.page), where, Number(req.query.pageSize), req.query.sortKey as any, Number(req.query.sortDir)))
+    }
+    @Post('delete/')
+    async deleteThis(req,res){
+        await this.getDS(req).deleteThisOne(req.body._id);
+        res.json({ok:1});
+    }
+    @Post('delete/:id')
+    async deleteThisOne(req,res){
+        await this.getDS(req).deleteThisOne(req.params.id);
+        res.json({ok:1});
+    }
+    // abstract generateCSVData<D>(data:D):any[][];
+    // @Post('exportExcel')
+    // async exportExcel(req:Request, res){
+    //     let excelGenerator = new ExcelGenerator()
+    //     // let csvData = this.generateCSVData()
+    //     excelGenerator.download(res, 'file')
+    // }
+}
