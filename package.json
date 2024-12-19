@@ -26,8 +26,7 @@
   "dependencies": {
     "@types/express": "^4.17.13",
     "express": "^5.0.1",
-    "express-session": "^1.17.2",
-    "reflect-metadata": "^0.1.14"
+    "express-session": "^1.17.2"
   },
   "devDependencies": {
     "esbuild": "^0.14.10",
