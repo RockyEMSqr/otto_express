@@ -1,6 +1,6 @@
 import express = require("express");
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
-export declare type facile_express = express.Express & {
+export type facile_express = express.Express & {
     start(): void;
 };
 interface facile_express_config {

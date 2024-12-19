@@ -33,12 +33,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -60,7 +60,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaginatedAPIController = exports.JSONNotNamedController = exports.JSONController = exports.CRUDController = exports.getMiddleWare = exports.Middleware = exports.Delete = exports.Put = exports.Post = exports.Get = exports.getHttpMethod = exports.getRoute = exports.Route = exports.getAutoMount = exports.AutoMount = exports.getController = exports.Controller = void 0;
+exports.PaginatedAPIController = exports.JSONNotNamedController = exports.JSONController = exports.CRUDController = void 0;
+exports.Controller = Controller;
+exports.getController = getController;
+exports.AutoMount = AutoMount;
+exports.getAutoMount = getAutoMount;
+exports.Route = Route;
+exports.getRoute = getRoute;
+exports.getHttpMethod = getHttpMethod;
+exports.Get = Get;
+exports.Post = Post;
+exports.Put = Put;
+exports.Delete = Delete;
+exports.Middleware = Middleware;
+exports.getMiddleWare = getMiddleWare;
 require("reflect-metadata");
 var RouteKey = 'Route';
 var ControllerKey = 'Contoller';
@@ -77,31 +90,25 @@ function Controller(route) {
         Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
     };
 }
-exports.Controller = Controller;
 function getController(target) {
     return Reflect.getMetadata(ControllerKey, target);
 }
-exports.getController = getController;
 var AutoMountKey = 'AutoMount';
 function AutoMount() {
     return Reflect.metadata(AutoMountKey, true);
 }
-exports.AutoMount = AutoMount;
 function getAutoMount(target) {
     return Reflect.getMetadata(AutoMountKey, target);
 }
-exports.getAutoMount = getAutoMount;
 function Route(route) {
     return Reflect.metadata(RouteKey, route);
 }
-exports.Route = Route;
 function getRoute(target, propKey) {
     if (target && propKey) {
         return Reflect.getMetadata(RouteKey, target, propKey);
     }
     return Reflect.getMetadata(RouteKey, target);
 }
-exports.getRoute = getRoute;
 var methodKey = 'httpMethod';
 function setHttpMethodMeta(verb, target, key, desc) {
     return Reflect.defineMetadata(methodKey, verb, target, key);
@@ -109,7 +116,6 @@ function setHttpMethodMeta(verb, target, key, desc) {
 function getHttpMethod(target, propKey) {
     return Reflect.getMetadata(methodKey, target, propKey);
 }
-exports.getHttpMethod = getHttpMethod;
 // Http Methods
 function Get(route) {
     return function (target, propertyKey, descriptor) {
@@ -117,28 +123,24 @@ function Get(route) {
         setRoute(route, target, propertyKey);
     };
 }
-exports.Get = Get;
 function Post(route) {
     return function (target, propertyKey, descriptor) {
         Reflect.defineMetadata(methodKey, 'post', target, propertyKey);
         setRoute(route, target, propertyKey);
     };
 }
-exports.Post = Post;
 function Put(route) {
     return function (target, propertyKey, descriptor) {
         Reflect.defineMetadata(methodKey, 'put', target, propertyKey);
         setRoute(route, target, propertyKey);
     };
 }
-exports.Put = Put;
 function Delete(route) {
     return function (target, propertyKey, descriptor) {
         Reflect.defineMetadata(methodKey, 'delete', target, propertyKey);
         setRoute(route, target, propertyKey);
     };
 }
-exports.Delete = Delete;
 var middlewareKey = 'MIDDLEWARE';
 function setMiddleware(middleware) {
     return function (target, propertyKey, descriptor) {
@@ -148,14 +150,12 @@ function setMiddleware(middleware) {
 function Middleware(middleware) {
     return setMiddleware(middleware);
 }
-exports.Middleware = Middleware;
 function getMiddleWare(target, propKey) {
     if (target && propKey) {
         return Reflect.getMetadata(middlewareKey, target, propKey);
     }
     return Reflect.getMetadata(middlewareKey, target);
 }
-exports.getMiddleWare = getMiddleWare;
 var CRUDController = /** @class */ (function () {
     function CRUDController() {
         this.objName = "obj";
@@ -170,7 +170,7 @@ var CRUDController = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.getDS(req).list()];
                     case 1:
                         objs = _b.sent();
-                        res.render(this.viewFolder + "/index", (_a = {}, _a[this.pluralObjName] = objs, _a));
+                        res.render("".concat(this.viewFolder, "/index"), (_a = {}, _a[this.pluralObjName] = objs, _a));
                         return [2 /*return*/];
                 }
             });
@@ -179,7 +179,7 @@ var CRUDController = /** @class */ (function () {
     CRUDController.prototype._new = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                res.render(this.viewFolder + "/form", {});
+                res.render("".concat(this.viewFolder, "/form"), {});
                 return [2 /*return*/];
             });
         });
@@ -193,7 +193,7 @@ var CRUDController = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.getDS(req).findById(req.params.id)];
                     case 1:
                         obj = _b.sent();
-                        res.render(this.viewFolder + "/form", (_a = {}, _a[this.objName] = obj, _a));
+                        res.render("".concat(this.viewFolder, "/form"), (_a = {}, _a[this.objName] = obj, _a));
                         return [2 /*return*/];
                 }
             });

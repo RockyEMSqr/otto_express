@@ -1,24 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.walk = exports.requireDir = exports.rrequireDir = exports.rrequireDirTS = exports.lsts_r = exports.lsJsOrTs_r = exports.ls_r = exports.lsjs_r = exports.lsjs = exports.isNotIndexFile = exports.isTSFile = exports.isJsOrTSFile = exports.isJsFile = void 0;
+exports.isJsFile = isJsFile;
+exports.isJsOrTSFile = isJsOrTSFile;
+exports.isTSFile = isTSFile;
+exports.isNotIndexFile = isNotIndexFile;
+exports.lsjs = lsjs;
+exports.lsjs_r = lsjs_r;
+exports.ls_r = ls_r;
+exports.lsJsOrTs_r = lsJsOrTs_r;
+exports.lsts_r = lsts_r;
+exports.rrequireDirTS = rrequireDirTS;
+exports.rrequireDir = rrequireDir;
+exports.requireDir = requireDir;
+exports.walk = walk;
 var fs = require("fs");
 var path = require("path");
 function isJsFile(file) {
     return path.extname(file).toLowerCase() === ".js";
 }
-exports.isJsFile = isJsFile;
 function isJsOrTSFile(file) {
     return isJsFile(file) || isTSFile(file);
 }
-exports.isJsOrTSFile = isJsOrTSFile;
 function isTSFile(file) {
     return path.extname(file).toLowerCase() === ".ts";
 }
-exports.isTSFile = isTSFile;
 function isNotIndexFile(file) {
     return path.basename(file).toLowerCase() !== "index.js";
 }
-exports.isNotIndexFile = isNotIndexFile;
 function lsjs(dir) {
     var files = fs
         .readdirSync(dir)
@@ -26,31 +34,26 @@ function lsjs(dir) {
         .filter(isNotIndexFile);
     return files;
 }
-exports.lsjs = lsjs;
 function lsjs_r(dir) {
     var files = walk(dir)
         .filter(isJsFile)
         .filter(isNotIndexFile);
     return files;
 }
-exports.lsjs_r = lsjs_r;
 function ls_r(dir) {
     var files = walk(dir);
     return files;
 }
-exports.ls_r = ls_r;
 function lsJsOrTs_r(dir) {
     return walk(dir)
         .filter(isJsOrTSFile);
 }
-exports.lsJsOrTs_r = lsJsOrTs_r;
 function lsts_r(dir) {
     var files = walk(dir)
         .filter(isTSFile)
         .filter(isNotIndexFile);
     return files;
 }
-exports.lsts_r = lsts_r;
 function rrequireDirTS(dir) {
     var ex = Object.create(null);
     var files = lsts_r(dir);
@@ -62,7 +65,6 @@ function rrequireDirTS(dir) {
     }
     return ex;
 }
-exports.rrequireDirTS = rrequireDirTS;
 function rrequireDir(dir) {
     var ex = Object.create(null);
     var files = lsJsOrTs_r(dir);
@@ -74,7 +76,6 @@ function rrequireDir(dir) {
     }
     return ex;
 }
-exports.rrequireDir = rrequireDir;
 function requireDir(dir) {
     var ex = Object.create(null);
     var files = lsjs(dir);
@@ -86,7 +87,6 @@ function requireDir(dir) {
     }
     return ex;
 }
-exports.requireDir = requireDir;
 function walk(dir) {
     var results = [];
     var list = fs.readdirSync(dir);
@@ -102,5 +102,4 @@ function walk(dir) {
     });
     return results;
 }
-exports.walk = walk;
 //# sourceMappingURL=utils.js.map
