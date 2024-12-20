@@ -121,8 +121,8 @@ function SetupArea(app, dir, area) {
     }
 }
 function trimLeadingSlash(r) {
-    if (r.substr(0, 1) == '/') {
-        r = r.substr(1, r.length);
+    if (r[0] == '/') {
+        r = r.substring(1); //r.substr(1, r.length);
     }
     return r;
 }
