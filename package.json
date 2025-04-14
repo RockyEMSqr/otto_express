@@ -25,7 +25,7 @@
   "homepage": "https://github.com/RockyEMSqr/otto_express#readme",
   "dependencies": {
     "@types/express": "^4.17.13",
-    "express": "^4.17.2",
+    "express": "^4.21.2",
     "express-session": "^1.17.2",
     "reflect-metadata": "^0.1.13"
   },
@@ -36,6 +36,6 @@
     "preact-render-to-string": "^5.1.19"
   },
   "optionalDependencies": {
-    "connect-sqlite3": "^0.9.13"
+    "connect-sqlite3": "^0.9.15"
   }
 }
