@@ -1,5 +1,5 @@
 // import express = require("express");
-const express = require('express');
+import express from 'express';
 import type { Express, Request, Response } from 'express';
 const path = require('path')
 // import * as debugModule from 'debug';

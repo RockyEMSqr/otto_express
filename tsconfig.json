@@ -12,7 +12,8 @@
 		"removeComments": false,
 		"noImplicitAny": false,
 		"jsx": "react",
-		"jsxFactory": "h"
+		"jsxFactory": "h",
+		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [
 		"node_modules"
