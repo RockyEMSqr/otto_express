@@ -10,10 +10,13 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.oexpress = void 0;
 // import express = require("express");
-var express_1 = require("express");
+var express_1 = __importDefault(require("express"));
 var path = require('path');
 // import * as debugModule from 'debug';
 var http = require('http');
