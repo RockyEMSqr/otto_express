@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express = require("express");
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 export type facile_express = express.Express & {
     start(): void;
@@ -25,6 +25,6 @@ interface facile_express_config {
 }
 declare function createApp(pathToConfig?: string): facile_express;
 declare function createApp(config?: facile_express_config): facile_express;
-export declare var oexpress: typeof createApp;
+export declare const oexpress: typeof createApp;
 export {};
 //# sourceMappingURL=express.d.ts.map

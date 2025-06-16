@@ -1,10 +1,7 @@
-// import express = require("express");
-// import express from 'express';
-import * as express from 'express';
-// import type { Express, Request, Response } from 'express';
-import path from 'path';
+import express = require("express");
+import path = require('path')
 // import * as debugModule from 'debug';
-import http from 'http';
+import http = require('http');
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
 export type facile_express = express.Express & { start(): void }
 interface facile_express_config {
@@ -54,9 +51,6 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 	if (process.env.DEBUG) {
 		console.log('FACILE CONFIG:', config);
 	}
-	console.log(express);
-	const app = express.default();
-
 	if (config.serveFavicon) {
 		let favicon = require('serve-favicon');
 		// app.use(favicon);
@@ -71,7 +65,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 
 
-
+	var app = express();
 	/**
 	 * monkey patch to allow dots
 	 */
@@ -159,7 +153,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		// will print stacktrace
 		if (app.get('env') === 'development') {
 
-			app.use((err: any, req: Request, res: Response, _next) => {
+			app.use((err: any, req: express.Request, res: express.Response, next) => {
 				res.status(err['status'] || 500);
 				let vm = Object.assign({}, {
 					message: err.message,
@@ -338,5 +332,5 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 
 
-export var oexpress = createApp;
+export const oexpress = createApp;
 // export default createApp;

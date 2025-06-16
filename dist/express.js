@@ -10,51 +10,12 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.oexpress = void 0;
-// import express = require("express");
-// import express from 'express';
-var express = __importStar(require("express"));
-// import type { Express, Request, Response } from 'express';
-var path_1 = __importDefault(require("path"));
+var express = require("express");
+var path = require("path");
 // import * as debugModule from 'debug';
-var http_1 = __importDefault(require("http"));
+var http = require("http");
 function createApp(configOrPath) {
     var defaults = {
         pwd: process.cwd(),
@@ -81,18 +42,17 @@ function createApp(configOrPath) {
     if (process.env.DEBUG) {
         console.log('FACILE CONFIG:', config);
     }
-    console.log(express);
-    var app = express.default();
     if (config.serveFavicon) {
         var favicon = require('serve-favicon');
         // app.use(favicon);
-        app.use(favicon(path_1.default.join(__dirname, '../public/favicon.ico')));
+        app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
     }
     if (config.log) {
         var logger = require('morgan');
         app.use(logger('dev'));
     }
     var bodyParser = require('body-parser');
+    var app = express();
     /**
      * monkey patch to allow dots
      */
@@ -115,12 +75,12 @@ function createApp(configOrPath) {
     }
     app.set('x-powered-by', false);
     // view engine setup
-    app.set('views', path_1.default.join(config.cwd, config.views));
+    app.set('views', path.join(config.cwd, config.views));
     if (config.viewEngine) {
         app.set('view engine', config.viewEngine);
     }
     for (var i = 0; i < config.publicFolders.length; i++) {
-        app.use(express.static(path_1.default.join(config.cwd, config.publicFolders[i])));
+        app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
     }
     // if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
     // 	let sessionStore;
@@ -168,7 +128,7 @@ function createApp(configOrPath) {
         // development error handler
         // will print stacktrace
         if (app.get('env') === 'development') {
-            app.use(function (err, req, res, _next) {
+            app.use(function (err, req, res, next) {
                 res.status(err['status'] || 500);
                 var vm = Object.assign({}, {
                     message: err.message,
@@ -251,7 +211,7 @@ function createApp(configOrPath) {
         /**
          * Create HTTP server.
          */
-        var server = http_1.default.createServer(app);
+        var server = http.createServer(app);
         /**
          * Listen on provided port, on all network interfaces.
          */
