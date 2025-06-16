@@ -1,9 +1,11 @@
-import express = require("express");
-import path = require('path')
+// import express = require("express");
+const express = require('express');
+import type { Express, Request, Response } from 'express';
+const path = require('path')
 // import * as debugModule from 'debug';
-import http = require('http');
+const http = require('http');
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
-export type facile_express = express.Express & { start(): void }
+export type facile_express = Express & { start(): void }
 interface facile_express_config {
 	views?: string;
 	viewEngine?: string;
@@ -96,44 +98,44 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
 	}
 
-	if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
-		let sessionStore;
-		let session = require('express-session');
-		if (config.useThisSessionStore) {
-			let store = config.useThisSessionStore(session);
-			sessionStore = new store(config.sessionStoreOptions); //db:':memory:'
-		} else {
-			if (config.useSQliteFileStore) {
-				var FileStore = require('connect-sqlite3')(session);
-				sessionStore = new FileStore({ dir: config.cwd, db: 'sessions.db' })
-			}
-			if (config.useSessionFileStore) {
+	// if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
+	// 	let sessionStore;
+	// 	let session = require('express-session');
+	// 	if (config.useThisSessionStore) {
+	// 		let store = config.useThisSessionStore(session);
+	// 		sessionStore = new store(config.sessionStoreOptions); //db:':memory:'
+	// 	} else {
+	// 		if (config.useSQliteFileStore) {
+	// 			var FileStore = require('connect-sqlite3')(session);
+	// 			sessionStore = new FileStore({ dir: config.cwd, db: 'sessions.db' })
+	// 		}
+	// 		if (config.useSessionFileStore) {
 
-				var FileStore = require('session-file-store')(session);
-				sessionStore = new FileStore({
-					fallbackSessionFn: function (sessionId) {
-						return {
-							"cookie": {
-								"originalMaxAge": null,
-								"expires": null,
-								"httpOnly": true,
-								"path": "/"
-							}
-						};
-					}
-				});
+	// 			var FileStore = require('session-file-store')(session);
+	// 			sessionStore = new FileStore({
+	// 				fallbackSessionFn: function (sessionId) {
+	// 					return {
+	// 						"cookie": {
+	// 							"originalMaxAge": null,
+	// 							"expires": null,
+	// 							"httpOnly": true,
+	// 							"path": "/"
+	// 						}
+	// 					};
+	// 				}
+	// 			});
 
-			}
+	// 		}
 
-		}
-		app.use(session({
-			store: sessionStore,
-			secret: config.session.secret,
-			resave: true,
-			saveUninitialized: true,
-			name: config.session.name
-		}));
-	}
+	// 	}
+	// 	app.use(session({
+	// 		store: sessionStore,
+	// 		secret: config.session.secret,
+	// 		resave: true,
+	// 		saveUninitialized: true,
+	// 		name: config.session.name
+	// 	}));
+	// }
 
 
 
@@ -153,7 +155,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		// will print stacktrace
 		if (app.get('env') === 'development') {
 
-			app.use((err: any, req: express.Request, res: express.Response, next) => {
+			app.use((err: any, req: Request, res: Response, _next) => {
 				res.status(err['status'] || 500);
 				let vm = Object.assign({}, {
 					message: err.message,
