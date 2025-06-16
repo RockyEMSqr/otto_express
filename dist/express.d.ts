@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 export type facile_express = Express & {
     start(): void;

@@ -1,10 +1,10 @@
 // import express = require("express");
 // import express from 'express';
 import express = require('express');
-import type { Express, Request, Response } from 'express';
-const path = require('path')
+// import type { Express, Request, Response } from 'express';
+import path from 'path';
 // import * as debugModule from 'debug';
-const http = require('http');
+import http from 'http';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
 export type facile_express = Express & { start(): void }
 interface facile_express_config {

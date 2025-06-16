@@ -10,14 +10,18 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.oexpress = void 0;
 // import express = require("express");
 // import express from 'express';
 var express = require("express");
-var path = require('path');
+// import type { Express, Request, Response } from 'express';
+var path_1 = __importDefault(require("path"));
 // import * as debugModule from 'debug';
-var http = require('http');
+var http_1 = __importDefault(require("http"));
 function createApp(configOrPath) {
     var defaults = {
         pwd: process.cwd(),
@@ -49,7 +53,7 @@ function createApp(configOrPath) {
     if (config.serveFavicon) {
         var favicon = require('serve-favicon');
         // app.use(favicon);
-        app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
+        app.use(favicon(path_1.default.join(__dirname, '../public/favicon.ico')));
     }
     if (config.log) {
         var logger = require('morgan');
@@ -78,12 +82,12 @@ function createApp(configOrPath) {
     }
     app.set('x-powered-by', false);
     // view engine setup
-    app.set('views', path.join(config.cwd, config.views));
+    app.set('views', path_1.default.join(config.cwd, config.views));
     if (config.viewEngine) {
         app.set('view engine', config.viewEngine);
     }
     for (var i = 0; i < config.publicFolders.length; i++) {
-        app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
+        app.use(express.static(path_1.default.join(config.cwd, config.publicFolders[i])));
     }
     // if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
     // 	let sessionStore;
@@ -214,7 +218,7 @@ function createApp(configOrPath) {
         /**
          * Create HTTP server.
          */
-        var server = http.createServer(app);
+        var server = http_1.default.createServer(app);
         /**
          * Listen on provided port, on all network interfaces.
          */
