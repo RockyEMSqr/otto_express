@@ -1,12 +1,12 @@
 // import express = require("express");
 // import express from 'express';
-import express = require('express');
+import * as express from 'express';
 // import type { Express, Request, Response } from 'express';
 import path from 'path';
 // import * as debugModule from 'debug';
 import http from 'http';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
-export type facile_express = Express & { start(): void }
+export type facile_express = express.Express & { start(): void }
 interface facile_express_config {
 	views?: string;
 	viewEngine?: string;
@@ -55,7 +55,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		console.log('FACILE CONFIG:', config);
 	}
 	console.log(express);
-	const app = express();
+	const app = express.default();
 
 	if (config.serveFavicon) {
 		let favicon = require('serve-favicon');
