@@ -12,10 +12,11 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.oexpress = void 0;
-var express = require("express");
-var path = require("path");
+// import express = require("express");
+var express = require('express');
+var path = require('path');
 // import * as debugModule from 'debug';
-var http = require("http");
+var http = require('http');
 function createApp(configOrPath) {
     var defaults = {
         pwd: process.cwd(),
@@ -82,42 +83,41 @@ function createApp(configOrPath) {
     for (var i = 0; i < config.publicFolders.length; i++) {
         app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
     }
-    if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
-        var sessionStore = void 0;
-        var session = require('express-session');
-        if (config.useThisSessionStore) {
-            var store = config.useThisSessionStore(session);
-            sessionStore = new store(config.sessionStoreOptions); //db:':memory:'
-        }
-        else {
-            if (config.useSQliteFileStore) {
-                var FileStore = require('connect-sqlite3')(session);
-                sessionStore = new FileStore({ dir: config.cwd, db: 'sessions.db' });
-            }
-            if (config.useSessionFileStore) {
-                var FileStore = require('session-file-store')(session);
-                sessionStore = new FileStore({
-                    fallbackSessionFn: function (sessionId) {
-                        return {
-                            "cookie": {
-                                "originalMaxAge": null,
-                                "expires": null,
-                                "httpOnly": true,
-                                "path": "/"
-                            }
-                        };
-                    }
-                });
-            }
-        }
-        app.use(session({
-            store: sessionStore,
-            secret: config.session.secret,
-            resave: true,
-            saveUninitialized: true,
-            name: config.session.name
-        }));
-    }
+    // if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
+    // 	let sessionStore;
+    // 	let session = require('express-session');
+    // 	if (config.useThisSessionStore) {
+    // 		let store = config.useThisSessionStore(session);
+    // 		sessionStore = new store(config.sessionStoreOptions); //db:':memory:'
+    // 	} else {
+    // 		if (config.useSQliteFileStore) {
+    // 			var FileStore = require('connect-sqlite3')(session);
+    // 			sessionStore = new FileStore({ dir: config.cwd, db: 'sessions.db' })
+    // 		}
+    // 		if (config.useSessionFileStore) {
+    // 			var FileStore = require('session-file-store')(session);
+    // 			sessionStore = new FileStore({
+    // 				fallbackSessionFn: function (sessionId) {
+    // 					return {
+    // 						"cookie": {
+    // 							"originalMaxAge": null,
+    // 							"expires": null,
+    // 							"httpOnly": true,
+    // 							"path": "/"
+    // 						}
+    // 					};
+    // 				}
+    // 			});
+    // 		}
+    // 	}
+    // 	app.use(session({
+    // 		store: sessionStore,
+    // 		secret: config.session.secret,
+    // 		resave: true,
+    // 		saveUninitialized: true,
+    // 		name: config.session.name
+    // 	}));
+    // }
     app.start = function () {
         //catch 404 and forward to error handler
         app.use(function (req, res, next) {
@@ -129,7 +129,7 @@ function createApp(configOrPath) {
         // development error handler
         // will print stacktrace
         if (app.get('env') === 'development') {
-            app.use(function (err, req, res, next) {
+            app.use(function (err, req, res, _next) {
                 res.status(err['status'] || 500);
                 var vm = Object.assign({}, {
                     message: err.message,
