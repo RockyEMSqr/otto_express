@@ -1,5 +1,6 @@
 // import express = require("express");
-import express from 'express';
+// import express from 'express';
+const express = require('express');
 import type { Express, Request, Response } from 'express';
 const path = require('path')
 // import * as debugModule from 'debug';
@@ -53,6 +54,9 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 	if (process.env.DEBUG) {
 		console.log('FACILE CONFIG:', config);
 	}
+
+	const app = express();
+
 	if (config.serveFavicon) {
 		let favicon = require('serve-favicon');
 		// app.use(favicon);
@@ -67,7 +71,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 
 
-	var app = express();
+
 	/**
 	 * monkey patch to allow dots
 	 */
