@@ -54,7 +54,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 	if (process.env.DEBUG) {
 		console.log('FACILE CONFIG:', config);
 	}
-
+	console.log(express);
 	const app = express();
 
 	if (config.serveFavicon) {

@@ -44,6 +44,7 @@ function createApp(configOrPath) {
     if (process.env.DEBUG) {
         console.log('FACILE CONFIG:', config);
     }
+    console.log(express);
     var app = express();
     if (config.serveFavicon) {
         var favicon = require('serve-favicon');
