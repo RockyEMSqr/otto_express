@@ -1,7 +1,11 @@
 import { join } from 'node:path';
 import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller.js';
 import { requireDir } from './utils.js';
+<<<<<<< HEAD
 export function router(app, conf) {
+=======
+export async function router(app, conf) {
+>>>>>>> 73c92bc (we good?)
     let cwd = process.cwd();
     let defaults = {
         controllers: join(cwd, '/controllers'),
@@ -10,6 +14,7 @@ export function router(app, conf) {
     };
     conf = { ...defaults, ...conf };
     let dev = false;
+<<<<<<< HEAD
     if (dev) {
         mountDir(app, conf.controllers, conf);
         return (req, res, next) => {
@@ -23,6 +28,20 @@ export function router(app, conf) {
             next();
         };
     }
+=======
+    // if (dev) {
+    // 	mountDir(app, conf.controllers, conf);
+    // 	return (req, res, next) => {
+    // 		mountDir(app, join(cwd, conf.controllers), conf);
+    // 		next();
+    // 	}
+    // } else {
+    await mountDir(app, join(cwd, conf.controllers), conf);
+    return (req, res, next) => {
+        next();
+    };
+    // }
+>>>>>>> 73c92bc (we good?)
 }
 async function mountDir(app, dir, opts) {
     //TODO(rc): check if using ts-node
@@ -88,9 +107,9 @@ export function setupController(app, C, area, ...preHandlers) {
             continue;
         }
         //TODO: check if method is private?
-        let actionRoute = getRoute(ctrl, name);
-        let controllerRoute = getRoute(C);
-        let httpMethod = getHttpMethod(ctrl, name); //|| 'get'; //default to a get
+        let actionRoute = getRoute(C, name);
+        let controllerRoute = getController(C);
+        let httpMethod = getHttpMethod(C, name); //|| 'get'; //default to a get
         var route = '/';
         if (area) {
             route += `${area}/`;
@@ -139,6 +158,9 @@ export function setupController(app, C, area, ...preHandlers) {
             }
         }
         if (httpMethod) {
+            app.use((req, res, next) => {
+                next();
+            });
             app[httpMethod](route, allMiddleware, async function (req, res, next) {
                 if (process.env.F_PROFILE) {
                     console.time(req.path);

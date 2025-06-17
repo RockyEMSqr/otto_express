@@ -14,9 +14,10 @@ import { oexpress, router } from '../src/index.ts';
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
-    app.use(await router(app, {
+    await router(app, {
         controllers: 'test/controllers'
-    }));
+    })
+    // app.use();
 
 
 

@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller.js';
 import { requireDir } from './utils.js';
-export function router(app, conf) {
+export async function router(app, conf) {
 	let cwd = process.cwd();
 	let defaults = {
 		controllers: join(cwd, '/controllers'),
@@ -10,19 +10,19 @@ export function router(app, conf) {
 	}
 	conf = { ...defaults, ...conf };
 	let dev = false;
-	if (dev) {
-		mountDir(app, conf.controllers, conf);
-		return (req, res, next) => {
-			mountDir(app, join(cwd, conf.controllers), conf);
+	// if (dev) {
+	// 	mountDir(app, conf.controllers, conf);
+	// 	return (req, res, next) => {
+	// 		mountDir(app, join(cwd, conf.controllers), conf);
 
-			next();
-		}
-	} else {
-		mountDir(app, join(cwd, conf.controllers), conf);
-		return (req, res, next) => {
-			next();
-		}
+	// 		next();
+	// 	}
+	// } else {
+	await mountDir(app, join(cwd, conf.controllers), conf);
+	return (req, res, next) => {
+		next();
 	}
+	// }
 
 }
 async function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
@@ -98,7 +98,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 		//TODO: check if method is private?
 
 		let actionRoute = getRoute(C, name);
-		let controllerRoute = getRoute(C);
+		let controllerRoute = getController(C);
 
 		let httpMethod = getHttpMethod(C, name); //|| 'get'; //default to a get
 		var route: string | string[] = '/';
@@ -151,6 +151,9 @@ export function setupController(app, C, area?, ...preHandlers) {
 		}
 
 		if (httpMethod) {
+			app.use((req, res, next) => {
+				next();
+			})
 			app[httpMethod](route, allMiddleware, async function (req, res, next) {
 				if (process.env.F_PROFILE) {
 					console.time(req.path);
