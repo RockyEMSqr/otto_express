@@ -1,12 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.router = router;
-exports.SetupArea = SetupArea;
-exports.setupController = setupController;
-const utils = require("./utils");
-const path = require("path");
-const controller_1 = require("./controller");
-function router(app, conf) {
+import { createRequire as _createRequire } from "module";
+const __require = _createRequire(import.meta.url);
+const utils = __require("./utils");
+const path = __require("path");
+import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller';
+export function router(app, conf) {
     let cwd = process.cwd();
     let defaults = {
         controllers: path.join(cwd, '/controllers'),
@@ -41,8 +38,8 @@ function mountDir(app, dir, opts) {
             //console.log(key, mkey, typeof mem, mem && mem.constructor);
             //TODO(rocky): handle mem null better?
             if (mem && mem.constructor) {
-                let mount = (0, controller_1.getAutoMount)(mem);
-                let controller = (0, controller_1.getController)(mem);
+                let mount = getAutoMount(mem);
+                let controller = getController(mem);
                 if (mount || controller) {
                     setupController(app, mem, opts.area, opts.middleware);
                 }
@@ -50,7 +47,7 @@ function mountDir(app, dir, opts) {
         }
     }
 }
-function SetupArea(app, dir, area, ...preHanders) {
+export function SetupArea(app, dir, area, ...preHanders) {
     var mods = utils.requireDir(dir);
     for (let key in mods) {
         //module/file
@@ -61,7 +58,7 @@ function SetupArea(app, dir, area, ...preHanders) {
             //console.log(key, mkey, typeof mem, mem && mem.constructor);
             //TODO(rocky): handle mem null better?
             if (mem && mem.constructor) {
-                let mount = (0, controller_1.getAutoMount)(mem);
+                let mount = getAutoMount(mem);
                 if (mount) {
                     setupController(app, mem, area, preHanders);
                 }
@@ -75,7 +72,7 @@ function trimLeadingSlash(r) {
     }
     return r;
 }
-function setupController(app, C, area, ...preHandlers) {
+export function setupController(app, C, area, ...preHandlers) {
     preHandlers = [].concat(...preHandlers);
     preHandlers = preHandlers.filter(x => x != undefined);
     var ctrl = new C();
@@ -93,9 +90,9 @@ function setupController(app, C, area, ...preHandlers) {
             continue;
         }
         //TODO: check if method is private?
-        let actionRoute = (0, controller_1.getRoute)(ctrl, name);
-        let controllerRoute = (0, controller_1.getRoute)(C);
-        let httpMethod = (0, controller_1.getHttpMethod)(ctrl, name); //|| 'get'; //default to a get
+        let actionRoute = getRoute(ctrl, name);
+        let controllerRoute = getRoute(C);
+        let httpMethod = getHttpMethod(ctrl, name); //|| 'get'; //default to a get
         var route = '/';
         if (area) {
             route += `${area}/`;
@@ -125,7 +122,7 @@ function setupController(app, C, area, ...preHandlers) {
         }
         let allMiddleware = [].concat(preHandlers);
         //todo(rc): method middleware comes first?
-        let methodMiddleware = (0, controller_1.getMiddleWare)(ctrl, name);
+        let methodMiddleware = getMiddleWare(ctrl, name);
         if (methodMiddleware) {
             if (Array.isArray(methodMiddleware)) {
                 allMiddleware = allMiddleware.concat(...methodMiddleware);
@@ -134,7 +131,7 @@ function setupController(app, C, area, ...preHandlers) {
                 allMiddleware = allMiddleware.concat(methodMiddleware);
             }
         }
-        let controllerMiddleware = (0, controller_1.getMiddleWare)(C);
+        let controllerMiddleware = getMiddleWare(C);
         if (controllerMiddleware) {
             if (Array.isArray(controllerMiddleware)) {
                 allMiddleware = allMiddleware.concat(...controllerMiddleware);

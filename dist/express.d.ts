@@ -27,4 +27,3 @@ declare function createApp(pathToConfig?: string): facile_express;
 declare function createApp(config?: facile_express_config): facile_express;
 export declare const oexpress: typeof createApp;
 export {};
-//# sourceMappingURL=express.d.ts.map

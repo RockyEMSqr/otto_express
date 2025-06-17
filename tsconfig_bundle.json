@@ -1,25 +1,29 @@
 {
 	"compilerOptions": {
-		"target": "ES2023",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"target": "ES2022", // Or "ESNext". Node 20 supports ES2022 features.
+		"module": "NodeNext", // Crucial for ESM in Node.js. Handles 'exports' field.
+		"moduleResolution": "NodeNext", // Also for proper module resolution in Node.js ESM.
+		"declaration": true, // Generates .d.ts files for type checking by consumers
+		"outDir": "./dist", // Output directory for compiled JS and .d.ts files
+		"rootDir": "./src", // Root directory of your TypeScript source files
+		"strict": true, // Enable all strict type-checking options
+		"esModuleInterop": true, // Allows default imports from CommonJS modules
+		"forceConsistentCasingInFileNames": true, // Ensure consistent file naming
+		"skipLibCheck": true, // Skip type checking of declaration files (reduces compile time)
+		"sourceMap": true, // Generate source maps for debugging
+		// "downlevelIteration": true,    // Useful if you target older runtimes that need it for iterators, but less so for Node 20
 		"lib": [
-			"es2015"
-		],
-		"sourceMap": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"removeComments": false,
-		"noImplicitAny": false,
-		"outDir": "dist/",
-		"skipLibCheck": true,
-		"declaration": true,
-		"declarationMap": true,
-		"esModuleInterop": true
+			"ES2022"
+		], // Include standard library definitions for ES2022 features. Add "DOM" if your library targets browser environments too.
+		"types": [
+			"node"
+		] // Include Node.js-specific types
 	},
+	"include": [
+		"src/**/*.ts" // Include all .ts files in the src directory
+	],
 	"exclude": [
-		"node_modules",
-		"test",
-		"dist"
+		"node_modules", // Exclude node_modules
+		"dist" // Exclude compiled output
 	]
 }

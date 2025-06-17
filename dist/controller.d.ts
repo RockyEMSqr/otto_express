@@ -57,4 +57,3 @@ export declare abstract class PaginatedAPIController extends JSONNotNamedControl
     deleteThis(req: any, res: any): Promise<void>;
     deleteThisOne(req: any, res: any): Promise<void>;
 }
-//# sourceMappingURL=controller.d.ts.map

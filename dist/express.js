@@ -1,13 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.oexpress = void 0;
-const express_1 = __importDefault(require("express"));
-const path = require("path");
+import { createRequire as _createRequire } from "module";
+const __require = _createRequire(import.meta.url);
+import express from 'express';
+const path = __require("path");
 // import * as debugModule from 'debug';
-const http = require("http");
+const http = __require("http");
 function createApp(configOrPath) {
     let defaults = {
         pwd: process.cwd(),
@@ -44,7 +40,7 @@ function createApp(configOrPath) {
         app.use(logger('dev'));
     }
     var bodyParser = require('body-parser');
-    var app = (0, express_1.default)();
+    var app = express();
     /**
      * monkey patch to allow dots
      */
@@ -72,7 +68,7 @@ function createApp(configOrPath) {
         app.set('view engine', config.viewEngine);
     }
     for (let i = 0; i < config.publicFolders.length; i++) {
-        app.use(express_1.default.static(path.join(config.cwd, config.publicFolders[i])));
+        app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
     }
     // if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
     // 	let sessionStore;
@@ -271,6 +267,6 @@ function createApp(configOrPath) {
     };
     return app;
 }
-exports.oexpress = createApp;
+export const oexpress = createApp;
 // export default createApp;
 //# sourceMappingURL=express.js.map
