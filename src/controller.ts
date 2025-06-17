@@ -1,19 +1,32 @@
 import "reflect-metadata";
 const RouteKey = 'Route';
 const ControllerKey = 'Contoller';
-function setRoute(route, target, propertyKey) {
-    if (route) {
+function setRoute(route: string, target: Object, propertyKey?: string) {
+    if (propertyKey) {
         Reflect.defineMetadata(RouteKey, route, target, propertyKey);
-    }
-}
-export function Controller(route?) {
-    return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
-        if (route) {
-            setRoute(route, target, propertyKey);
-        }
-        Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
+    } else {
+        Reflect.defineMetadata(RouteKey, route, target);
     }
 
+}
+// export function Controller(route?) {
+//     return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
+//         if (route) {
+//             setRoute(route, target, propertyKey);
+//         }
+//         Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
+//     }
+
+// }
+export function Controller(route: string): ClassDecorator {
+    return (target: Function) => {
+        setRoute(route, target);
+        Reflect.defineMetadata(ControllerKey, route, target);
+        // Initialize the routes array if it doesn't exist
+        // if (!Reflect.hasMetadata(CONTROLLER_ROUTES_METADATA, target)) {
+        //     Reflect.defineMetadata(CONTROLLER_ROUTES_METADATA, [], target);
+        // }
+    };
 }
 export function getController(target) {
     return Reflect.getMetadata(ControllerKey, target);
