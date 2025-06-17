@@ -1,14 +1,38 @@
 import "reflect-metadata";
+// polyfill.ts
+
+// Check if Symbol.metadata is already defined.
+// If not, define it using Symbol.for to ensure global uniqueness.
+if (typeof Symbol.metadata === 'undefined') {
+    (Symbol as any).metadata = Symbol.for('Symbol.metadata');
+}
+
+// Ensure the SymbolConstructor has the metadata property for TypeScript's type checking.
+declare global {
+    interface SymbolConstructor {
+        readonly metadata: unique symbol;
+    }
+}
 const RouteKey = 'Route';
 const ControllerKey = 'Contoller';
-function setRoute(route: string, target: Object, propertyKey?: string) {
-    if (propertyKey) {
-        Reflect.defineMetadata(RouteKey, route, target, propertyKey);
+// function setRoute(route: string, target: Object, propertyKey?: string) {
+//     if (propertyKey) {
+//         Reflect.defineMetadata(RouteKey, route, target, propertyKey);
+//     } else {
+//         Reflect.defineMetadata(RouteKey, route, target);
+//     }
+function setRoute(route: string, context: ClassMethodDecoratorContext) {
+    let metadata = context[Symbol.metadata] || context.metadata //[Symbol.metadata];
+    metadata = metadata || {};
+    if (context.kind == 'method') {
+        metadata[context.name] = metadata[context.name] || {};
+        metadata[context.name][RouteKey] = route;
     } else {
-        Reflect.defineMetadata(RouteKey, route, target);
+        metadata[RouteKey] = route;
     }
-
+    // return metadata[propKey][methodKey]
 }
+// }
 // export function Controller(route?) {
 //     return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
 //         if (route) {
@@ -46,6 +70,11 @@ export function Route(route) {
     return Reflect.metadata(RouteKey, route);
 }
 export function getRoute(target, propKey?) {
+    const metadata = target[Symbol.metadata];
+    if (propKey) {
+        return metadata[propKey][RouteKey]
+    }
+    return metadata[RouteKey];
     if (target && propKey) {
         return Reflect.getMetadata(RouteKey, target, propKey);
     }
@@ -53,21 +82,37 @@ export function getRoute(target, propKey?) {
 }
 
 const methodKey = 'httpMethod';
-function setHttpMethodMeta(verb, target, key, desc) {
-    return Reflect.defineMetadata(methodKey, verb, target, key);
-}
-export function getHttpMethod(target, propKey) {
-    return Reflect.getMetadata(methodKey, target, propKey);
+// function setHttpMethodMeta(verb, target, key, desc) {
+//     return Reflect.defineMetadata(methodKey, verb, target, key);
+// }
+export function getHttpMethod(target: any, propKey: string) {
+    console.log('GETGET', target, propKey);
+    // return Reflect.getMetadata(methodKey, target, propKey);
+    const metadata = target[Symbol.metadata];
+    return metadata[propKey][methodKey]
 }
 
 // Http Methods
-export function Get(route?): any {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'get', target, propertyKey);
-        setRoute(route, target, propertyKey);
+// export function Get(route: string): any {
+//     return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'get', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+
+// }
+export function Get(route: string): any {
+    return function (_target: any, context: ClassMethodDecoratorContext) {
+        console.log(_target, context);
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {}
+            context.metadata[context.name][methodKey] = 'get';
+            setRoute(route, context);
+        }
     }
 
+
 }
+
 export function Post(route?): any {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
         Reflect.defineMetadata(methodKey, 'post', target, propertyKey);

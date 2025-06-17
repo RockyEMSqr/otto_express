@@ -97,10 +97,10 @@ export function setupController(app, C, area?, ...preHandlers) {
 		}
 		//TODO: check if method is private?
 
-		let actionRoute = getRoute(ctrl, name);
+		let actionRoute = getRoute(C, name);
 		let controllerRoute = getRoute(C);
 
-		let httpMethod = getHttpMethod(ctrl, name); //|| 'get'; //default to a get
+		let httpMethod = getHttpMethod(C, name); //|| 'get'; //default to a get
 		var route: string | string[] = '/';
 		if (area) {
 			route += `${area}/`;
