@@ -1,4 +1,4 @@
-import express = require("express");
+import * as express from 'express';
 import path = require('path')
 // import * as debugModule from 'debug';
 import http = require('http');
@@ -65,7 +65,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 
 
-	var app = express();
+	var app = express.default();
 	/**
 	 * monkey patch to allow dots
 	 */
