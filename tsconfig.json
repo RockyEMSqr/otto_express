@@ -12,6 +12,8 @@
 		"skipLibCheck": true, // Skip type checking of declaration files (reduces compile time)
 		"sourceMap": true, // Generate source maps for debugging
 		// "downlevelIteration": true,    // Useful if you target older runtimes that need it for iterators, but less so for Node 20
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
 		"lib": [
 			"ES2022"
 		], // Include standard library definitions for ES2022 features. Add "DOM" if your library targets browser environments too.

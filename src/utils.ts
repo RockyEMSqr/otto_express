@@ -1,89 +1,54 @@
-import fs = require('fs');
-import path = require('path');
-export function isJsFile(file) {
-    return path.extname(file).toLowerCase() === ".js";
-}
-export function isJsOrTSFile(file) {
-    return isJsFile(file) || isTSFile(file);
-}
-export function isTSFile(file) {
-    return path.extname(file).toLowerCase() === ".ts";
+import { readdir } from 'node:fs/promises';
+import { resolve, parse, join } from 'node:path';
+
+export async function requireDir(dir: string) {
+    return await importModulesFromDirectory(dir)
 }
 
-export function isNotIndexFile(file) {
-    return path.basename(file).toLowerCase() !== "index.js";
+// Define the expected type of your imported modules
+// Adjust this based on what your handler files actually export
+interface HandlerModule {
+    [key: string]: any; // Could be a function, an object, etc.
+    default?: any; // If modules have default exports
 }
-export function lsjs(dir) {
-    var files = fs
-        .readdirSync(dir)
-        .filter(isJsFile)
-        .filter(isNotIndexFile);
-    return files
-}
-export function lsjs_r(dir) {
-    var files = walk(dir)
-        .filter(isJsFile)
-        .filter(isNotIndexFile);
-    return files
-}
-export function ls_r(dir) {
-    var files = walk(dir);
-    return files
-}
-export function lsJsOrTs_r(dir) {
-    return walk(dir)
-        .filter(isJsOrTSFile);
-}
-export function lsts_r(dir) {
-    var files = walk(dir)
-        .filter(isTSFile)
-        .filter(isNotIndexFile);
-    return files
-}
-export function rrequireDirTS(dir) {
-    var ex = Object.create(null);
-    var files = lsts_r(dir);
-    for (let i = 0; i < files.length; i++) {
-        let f = files[i];
-        var thePath = require.resolve(f)
-        delete require.cache[thePath]
-        ex[f] = require(thePath);
-    }
-    return ex;
-}
-export function rrequireDir(dir) {
-    var ex = Object.create(null);
-    var files = lsJsOrTs_r(dir);
-    for (let i = 0; i < files.length; i++) {
-        let f = files[i];
-        var thePath = require.resolve(f)
-        delete require.cache[thePath]
-        ex[f] = require(thePath);
-    }
-    return ex;
-}
-export function requireDir(dir) {
-    var ex = Object.create(null);
-    var files = lsjs(dir);
-    for (let i = 0; i < files.length; i++) {
-        let f = files[i];
-        var thePath = require.resolve(path.join(dir, f))
-        delete require.cache[thePath]
-        ex[f.split('.')[0]] = require(thePath);
-    }
-    return ex;
-}
-export function walk(dir) {
-    var results = [];
-    var list = fs.readdirSync(dir);
-    list.forEach(function (file) {
-        file = dir + '/' + file;
-        var stat = fs.statSync(file);
-        if (stat && stat.isDirectory()) {
-            results = results.concat(walk(file));
-        } else {
-            results.push(file);
+export async function importModulesFromDirectory<T = HandlerModule>(
+    directoryPath: string
+): Promise<{ [key: string]: T }> {
+    const modules: { [key: string]: T } = {};
+    const absolutePath = resolve(directoryPath); // Get absolute path
+
+    try {
+        const files = await readdir(absolutePath);
+
+        for (const file of files) {
+            if (file.endsWith('.js') || file.endsWith('.ts')) { // Look for compiled .js files
+                const fileName = parse(file).name; // Get file name without extension
+                const filePath = join(absolutePath, file);
+
+                try {
+                    // Dynamic import
+                    // Node.js will load the .js file. If you have "type": "module" in package.json,
+                    // it will treat it as ESM. Otherwise, it will treat it as CJS.
+                    // The 'as any' is a type assertion because TS can't infer the exact module shape.
+                    const module = await import(filePath);
+
+                    // You'll need to decide how to extract from the module object:
+                    // If each file has a default export you want:
+                    modules[fileName] = (module.default || module) as T; // Use default if present, else the whole module
+
+                    // If you want all named exports from each module:
+                    // modules[fileName] = module as T;
+
+                } catch (importError: any) {
+                    console.error(`Failed to import module ${file}:`, importError.message);
+                    // Decide if you want to skip or throw
+                }
+            }
         }
-    })
-    return results;
+    } catch (readDirError: any) {
+        console.error(`Error reading directory ${directoryPath}:`, readDirError.message);
+        throw readDirError; // Re-throw to propagate the error
+    }
+
+    return modules;
 }

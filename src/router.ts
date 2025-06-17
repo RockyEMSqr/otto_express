@@ -1,10 +1,10 @@
-import utils = require('./utils');
-import path = require('path');
-import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller';
+import { join } from 'node:path'
+import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller.js';
+import { requireDir } from './utils.js';
 export function router(app, conf) {
 	let cwd = process.cwd();
 	let defaults = {
-		controllers: path.join(cwd, '/controllers'),
+		controllers: join(cwd, '/controllers'),
 		middleware: [],
 		area: null
 	}
@@ -13,21 +13,21 @@ export function router(app, conf) {
 	if (dev) {
 		mountDir(app, conf.controllers, conf);
 		return (req, res, next) => {
-			mountDir(app, path.join(cwd, conf.controllers), conf);
+			mountDir(app, join(cwd, conf.controllers), conf);
 
 			next();
 		}
 	} else {
-		mountDir(app, path.join(cwd, conf.controllers), conf);
+		mountDir(app, join(cwd, conf.controllers), conf);
 		return (req, res, next) => {
 			next();
 		}
 	}
 
 }
-function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
+async function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
 	//TODO(rc): check if using ts-node
-	var mods = utils.rrequireDir(dir);
+	var mods = await requireDir(dir);
 	for (let key in mods) {
 
 		//module/file
@@ -48,8 +48,8 @@ function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
 		}
 	}
 }
-export function SetupArea(app, dir, area?, ...preHanders) {
-	var mods = utils.requireDir(dir);
+export async function SetupArea(app, dir, area?, ...preHanders) {
+	var mods = await requireDir(dir);
 	for (let key in mods) {
 
 		//module/file
@@ -69,7 +69,7 @@ export function SetupArea(app, dir, area?, ...preHanders) {
 		}
 	}
 }
-function trimLeadingSlash(r:string) {
+function trimLeadingSlash(r: string) {
 	if (r[0] == '/') {
 		r = r.substring(1);//r.substr(1, r.length);
 	}

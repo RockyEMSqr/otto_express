@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from "../..";
+import { Controller, Get, Post } from "../../src/index.js";
 import type { Request, Response } from 'express';
 
 const people = [

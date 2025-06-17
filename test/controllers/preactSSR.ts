@@ -1,4 +1,4 @@
-import { Controller, Get } from "../..";
+import { Controller, Get } from "../../src";
 import render from 'preact-render-to-string';
 import { h } from 'preact';
 import { IndexPage, IndexPageComp } from "../wui";
