@@ -41,16 +41,6 @@ if (typeof Symbol.metadata === 'undefined') {
 }
 const RouteKey = 'Route';
 const ControllerKey = 'Contoller';
-<<<<<<< HEAD
-function setRoute(route, target, propertyKey) {
-    if (propertyKey) {
-        Reflect.defineMetadata(RouteKey, route, target, propertyKey);
-    }
-    else {
-        Reflect.defineMetadata(RouteKey, route, target);
-    }
-}
-=======
 // function setRoute(route: string, target: Object, propertyKey?: string) {
 //     if (propertyKey) {
 //         Reflect.defineMetadata(RouteKey, route, target, propertyKey);
@@ -70,7 +60,6 @@ function setRoute(route, context) {
     // return metadata[propKey][methodKey]
 }
 // }
->>>>>>> 73c92bc (we good?)
 // export function Controller(route?) {
 //     return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
 //         if (route) {

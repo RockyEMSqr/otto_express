@@ -1,12 +1,9 @@
 import "reflect-metadata";
-<<<<<<< HEAD
-=======
 declare global {
     interface SymbolConstructor {
         readonly metadata: unique symbol;
     }
 }
->>>>>>> 73c92bc (we good?)
 export declare function Controller(route: string): ClassDecorator;
 export declare function getController(target: any): any;
 export declare function AutoMount(): {

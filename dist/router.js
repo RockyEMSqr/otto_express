@@ -1,11 +1,7 @@
 import { join } from 'node:path';
 import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller.js';
 import { requireDir } from './utils.js';
-<<<<<<< HEAD
-export function router(app, conf) {
-=======
 export async function router(app, conf) {
->>>>>>> 73c92bc (we good?)
     let cwd = process.cwd();
     let defaults = {
         controllers: join(cwd, '/controllers'),
@@ -14,21 +10,6 @@ export async function router(app, conf) {
     };
     conf = { ...defaults, ...conf };
     let dev = false;
-<<<<<<< HEAD
-    if (dev) {
-        mountDir(app, conf.controllers, conf);
-        return (req, res, next) => {
-            mountDir(app, join(cwd, conf.controllers), conf);
-            next();
-        };
-    }
-    else {
-        mountDir(app, join(cwd, conf.controllers), conf);
-        return (req, res, next) => {
-            next();
-        };
-    }
-=======
     // if (dev) {
     // 	mountDir(app, conf.controllers, conf);
     // 	return (req, res, next) => {
@@ -41,7 +22,6 @@ export async function router(app, conf) {
         next();
     };
     // }
->>>>>>> 73c92bc (we good?)
 }
 async function mountDir(app, dir, opts) {
     //TODO(rc): check if using ts-node
