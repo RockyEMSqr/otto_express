@@ -1,92 +1,40 @@
-import { createRequire as _createRequire } from "module";
-const __require = _createRequire(import.meta.url);
-const fs = __require("fs");
-const path = __require("path");
-export function isJsFile(file) {
-    return path.extname(file).toLowerCase() === ".js";
+import { readdir } from 'node:fs/promises';
+import { resolve, parse, join } from 'node:path';
+export async function requireDir(dir) {
+    return await importModulesFromDirectory(dir);
 }
-export function isJsOrTSFile(file) {
-    return isJsFile(file) || isTSFile(file);
-}
-export function isTSFile(file) {
-    return path.extname(file).toLowerCase() === ".ts";
-}
-export function isNotIndexFile(file) {
-    return path.basename(file).toLowerCase() !== "index.js";
-}
-export function lsjs(dir) {
-    var files = fs
-        .readdirSync(dir)
-        .filter(isJsFile)
-        .filter(isNotIndexFile);
-    return files;
-}
-export function lsjs_r(dir) {
-    var files = walk(dir)
-        .filter(isJsFile)
-        .filter(isNotIndexFile);
-    return files;
-}
-export function ls_r(dir) {
-    var files = walk(dir);
-    return files;
-}
-export function lsJsOrTs_r(dir) {
-    return walk(dir)
-        .filter(isJsOrTSFile);
-}
-export function lsts_r(dir) {
-    var files = walk(dir)
-        .filter(isTSFile)
-        .filter(isNotIndexFile);
-    return files;
-}
-export function rrequireDirTS(dir) {
-    var ex = Object.create(null);
-    var files = lsts_r(dir);
-    for (let i = 0; i < files.length; i++) {
-        let f = files[i];
-        var thePath = require.resolve(f);
-        delete require.cache[thePath];
-        ex[f] = require(thePath);
-    }
-    return ex;
-}
-export function rrequireDir(dir) {
-    var ex = Object.create(null);
-    var files = lsJsOrTs_r(dir);
-    for (let i = 0; i < files.length; i++) {
-        let f = files[i];
-        var thePath = require.resolve(f);
-        delete require.cache[thePath];
-        ex[f] = require(thePath);
-    }
-    return ex;
-}
-export function requireDir(dir) {
-    var ex = Object.create(null);
-    var files = lsjs(dir);
-    for (let i = 0; i < files.length; i++) {
-        let f = files[i];
-        var thePath = require.resolve(path.join(dir, f));
-        delete require.cache[thePath];
-        ex[f.split('.')[0]] = require(thePath);
-    }
-    return ex;
-}
-export function walk(dir) {
-    var results = [];
-    var list = fs.readdirSync(dir);
-    list.forEach(function (file) {
-        file = dir + '/' + file;
-        var stat = fs.statSync(file);
-        if (stat && stat.isDirectory()) {
-            results = results.concat(walk(file));
+export async function importModulesFromDirectory(directoryPath) {
+    const modules = {};
+    const absolutePath = resolve(directoryPath); // Get absolute path
+    try {
+        const files = await readdir(absolutePath);
+        for (const file of files) {
+            if (file.endsWith('.js') || file.endsWith('.ts')) { // Look for compiled .js files
+                const fileName = parse(file).name; // Get file name without extension
+                const filePath = join(absolutePath, file);
+                try {
+                    // Dynamic import
+                    // Node.js will load the .js file. If you have "type": "module" in package.json,
+                    // it will treat it as ESM. Otherwise, it will treat it as CJS.
+                    // The 'as any' is a type assertion because TS can't infer the exact module shape.
+                    const module = await import(filePath);
+                    // You'll need to decide how to extract from the module object:
+                    // If each file has a default export you want:
+                    modules[fileName] = (module.default || module); // Use default if present, else the whole module
+                    // If you want all named exports from each module:
+                    // modules[fileName] = module as T;
+                }
+                catch (importError) {
+                    console.error(`Failed to import module ${file}:`, importError.message);
+                    // Decide if you want to skip or throw
+                }
+            }
         }
-        else {
-            results.push(file);
-        }
-    });
-    return results;
+    }
+    catch (readDirError) {
+        console.error(`Error reading directory ${directoryPath}:`, readDirError.message);
+        throw readDirError; // Re-throw to propagate the error
+    }
+    return modules;
 }
 //# sourceMappingURL=utils.js.map

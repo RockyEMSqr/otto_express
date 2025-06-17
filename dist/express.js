@@ -1,15 +1,14 @@
-import { createRequire as _createRequire } from "module";
-const __require = _createRequire(import.meta.url);
 import express from 'express';
-const path = __require("path");
-// import * as debugModule from 'debug';
-const http = __require("http");
+import { join } from 'node:path';
+import { createServer } from 'node:http';
+import bodyParser from 'body-parser';
+import qs from 'qs';
 function createApp(configOrPath) {
     let defaults = {
         pwd: process.cwd(),
         cwd: process.cwd(),
         views: 'views',
-        viewEngine: null, //'pug',
+        // viewEngine: null, //'pug',
         publicFolders: ['public'],
         useSessionFileStore: false,
         useSQliteFileStore: false,
@@ -30,21 +29,19 @@ function createApp(configOrPath) {
     if (process.env.DEBUG) {
         console.log('FACILE CONFIG:', config);
     }
+    const app = express();
     if (config.serveFavicon) {
         let favicon = require('serve-favicon');
         // app.use(favicon);
-        app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
+        app.use(favicon(join(__dirname, '../public/favicon.ico')));
     }
     if (config.log) {
         let logger = require('morgan');
         app.use(logger('dev'));
     }
-    var bodyParser = require('body-parser');
-    var app = express();
     /**
      * monkey patch to allow dots
      */
-    var qs = require('qs');
     let _qsparse = qs.parse;
     qs.parse = function (str, opts) {
         return _qsparse(str, { allowDots: true, ...opts });
@@ -63,12 +60,14 @@ function createApp(configOrPath) {
     }
     app.set('x-powered-by', false);
     // view engine setup
-    app.set('views', path.join(config.cwd, config.views));
+    app.set('views', join(config.cwd, config.views));
     if (config.viewEngine) {
         app.set('view engine', config.viewEngine);
     }
-    for (let i = 0; i < config.publicFolders.length; i++) {
-        app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
+    if (config.publicFolders) {
+        for (let i = 0; i < config.publicFolders.length; i++) {
+            app.use(express.static(join(config.cwd, config.publicFolders[i])));
+        }
     }
     // if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
     // 	let sessionStore;
@@ -207,7 +206,7 @@ function createApp(configOrPath) {
         /**
          * Create HTTP server.
          */
-        var server = http.createServer(app);
+        var server = createServer(app);
         /**
          * Listen on provided port, on all network interfaces.
          */

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-export declare function Controller(route?: any): (target: any, propertyKey?: string, descriptor?: PropertyDescriptor) => void;
+export declare function Controller(route: string): ClassDecorator;
 export declare function getController(target: any): any;
 export declare function AutoMount(): {
     (target: Function): void;
