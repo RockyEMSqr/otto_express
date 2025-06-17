@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "ES2022", // Or "ESNext". Node 20 supports ES2022 features.
+		"target": "esnext", // Or "ESNext". Node 20 supports ES2022 features.
 		"module": "NodeNext", // Crucial for ESM in Node.js. Handles 'exports' field.
 		"moduleResolution": "NodeNext", // Also for proper module resolution in Node.js ESM.
 		"declaration": true, // Generates .d.ts files for type checking by consumers
@@ -15,7 +15,7 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"lib": [
-			"ES2022"
+			"ESNext"
 		], // Include standard library definitions for ES2022 features. Add "DOM" if your library targets browser environments too.
 		"types": [
 			"node"
