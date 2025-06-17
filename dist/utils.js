@@ -13,8 +13,8 @@ exports.rrequireDirTS = rrequireDirTS;
 exports.rrequireDir = rrequireDir;
 exports.requireDir = requireDir;
 exports.walk = walk;
-var fs = require("fs");
-var path = require("path");
+const fs = require("fs");
+const path = require("path");
 function isJsFile(file) {
     return path.extname(file).toLowerCase() === ".js";
 }
@@ -57,8 +57,8 @@ function lsts_r(dir) {
 function rrequireDirTS(dir) {
     var ex = Object.create(null);
     var files = lsts_r(dir);
-    for (var i = 0; i < files.length; i++) {
-        var f = files[i];
+    for (let i = 0; i < files.length; i++) {
+        let f = files[i];
         var thePath = require.resolve(f);
         delete require.cache[thePath];
         ex[f] = require(thePath);
@@ -68,8 +68,8 @@ function rrequireDirTS(dir) {
 function rrequireDir(dir) {
     var ex = Object.create(null);
     var files = lsJsOrTs_r(dir);
-    for (var i = 0; i < files.length; i++) {
-        var f = files[i];
+    for (let i = 0; i < files.length; i++) {
+        let f = files[i];
         var thePath = require.resolve(f);
         delete require.cache[thePath];
         ex[f] = require(thePath);
@@ -79,8 +79,8 @@ function rrequireDir(dir) {
 function requireDir(dir) {
     var ex = Object.create(null);
     var files = lsjs(dir);
-    for (var i = 0; i < files.length; i++) {
-        var f = files[i];
+    for (let i = 0; i < files.length; i++) {
+        let f = files[i];
         var thePath = require.resolve(path.join(dir, f));
         delete require.cache[thePath];
         ex[f.split('.')[0]] = require(thePath);

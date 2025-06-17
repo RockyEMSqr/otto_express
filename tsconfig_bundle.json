@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "ES2023",
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"lib": [
@@ -15,7 +15,6 @@
 		"skipLibCheck": true,
 		"declaration": true,
 		"declarationMap": true,
-		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true
 	},
 	"exclude": [

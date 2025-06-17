@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -45,12 +34,12 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.oexpress = void 0;
-var express = __importStar(require("express"));
-var path = require("path");
+const express = __importStar(require("express"));
+const path = require("path");
 // import * as debugModule from 'debug';
-var http = require("http");
+const http = require("http");
 function createApp(configOrPath) {
-    var defaults = {
+    let defaults = {
         pwd: process.cwd(),
         cwd: process.cwd(),
         views: 'views',
@@ -64,24 +53,24 @@ function createApp(configOrPath) {
         },
         port: 3000
     };
-    var config = __assign({}, defaults);
+    var config = { ...defaults };
     if (typeof configOrPath == 'string') {
-        config = __assign(__assign({}, config), require(configOrPath));
+        config = { ...config, ...require(configOrPath) };
     }
     else if (typeof configOrPath == 'object') {
-        config = __assign(__assign({}, config), configOrPath);
+        config = { ...config, ...configOrPath };
     }
-    config = __assign(__assign({}, defaults), config);
+    config = { ...defaults, ...config };
     if (process.env.DEBUG) {
         console.log('FACILE CONFIG:', config);
     }
     if (config.serveFavicon) {
-        var favicon = require('serve-favicon');
+        let favicon = require('serve-favicon');
         // app.use(favicon);
         app.use(favicon(path.join(__dirname, '../public/favicon.ico')));
     }
     if (config.log) {
-        var logger = require('morgan');
+        let logger = require('morgan');
         app.use(logger('dev'));
     }
     var bodyParser = require('body-parser');
@@ -90,9 +79,9 @@ function createApp(configOrPath) {
      * monkey patch to allow dots
      */
     var qs = require('qs');
-    var _qsparse = qs.parse;
+    let _qsparse = qs.parse;
     qs.parse = function (str, opts) {
-        return _qsparse(str, __assign({ allowDots: true }, opts));
+        return _qsparse(str, { allowDots: true, ...opts });
     };
     if (config.bodyParserJSONOptions) {
         app.use(bodyParser.json(config.bodyParserJSONOptions));
@@ -101,7 +90,7 @@ function createApp(configOrPath) {
         app.use(bodyParser.json());
     }
     if (config.bodyParserUrlEncodedOptions) {
-        app.use(bodyParser.urlencoded(__assign({ extended: true }, config.bodyParserUrlEncodedOptions)));
+        app.use(bodyParser.urlencoded({ extended: true, ...config.bodyParserUrlEncodedOptions }));
     }
     else {
         app.use(bodyParser.urlencoded({ extended: true }));
@@ -112,7 +101,7 @@ function createApp(configOrPath) {
     if (config.viewEngine) {
         app.set('view engine', config.viewEngine);
     }
-    for (var i = 0; i < config.publicFolders.length; i++) {
+    for (let i = 0; i < config.publicFolders.length; i++) {
         app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
     }
     // if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
@@ -152,7 +141,7 @@ function createApp(configOrPath) {
     // }
     app.start = function () {
         //catch 404 and forward to error handler
-        app.use(function (req, res, next) {
+        app.use((req, res, next) => {
             var err = new Error('Not Found');
             err['status'] = 404;
             next(err);
@@ -161,9 +150,9 @@ function createApp(configOrPath) {
         // development error handler
         // will print stacktrace
         if (app.get('env') === 'development') {
-            app.use(function (err, req, res, next) {
+            app.use((err, req, res, next) => {
                 res.status(err['status'] || 500);
-                var vm = Object.assign({}, {
+                let vm = Object.assign({}, {
                     message: err.message,
                     error: err
                 }, res.locals);
@@ -180,7 +169,9 @@ function createApp(configOrPath) {
                         // if (!existsSync(errViewP)) {
                         // 	errViewP = path.join(__dirname, '../../', 'views', 'error.pug');
                         // }
-                        return res.send("\n\t\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t\t")); //res.render(errViewP, vm);
+                        return res.send(`
+						<html><body>${JSON.stringify(vm)}</body></html>
+						`); //res.render(errViewP, vm);
                     }
                 }
                 else {
@@ -193,7 +184,9 @@ function createApp(configOrPath) {
                             // if (!existsSync(errViewP)) {
                             // 	errViewP = path.join(__dirname, '../../', 'views', 'error.pug');
                             // }
-                            return res.send("\n\t\t\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t\t\t"));
+                            return res.send(`
+							<html><body>${JSON.stringify(vm)}</body></html>
+							`);
                         },
                         json: function () {
                             return res.json(vm);
@@ -204,9 +197,9 @@ function createApp(configOrPath) {
         }
         // production error handler
         // no stacktraces leaked to user
-        app.use(function (err, req, res, next) {
+        app.use((err, req, res, next) => {
             res.status(err.status || 500);
-            var vm = Object.assign({}, {
+            let vm = Object.assign({}, {
                 message: err.message,
                 error: {}
             }, res.locals);
@@ -218,7 +211,9 @@ function createApp(configOrPath) {
                     return res.json(vm);
                 }
                 else {
-                    return res.send("\n\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t"));
+                    return res.send(`
+					<html><body>${JSON.stringify(vm)}</body></html>
+					`);
                 }
             }
             else {
@@ -227,7 +222,9 @@ function createApp(configOrPath) {
                  */
                 return res.format({
                     html: function () {
-                        return res.send("\n\t\t\t\t\t\t<html><body>".concat(JSON.stringify(vm), "</body></html>\n\t\t\t\t\t\t"));
+                        return res.send(`
+						<html><body>${JSON.stringify(vm)}</body></html>
+						`);
                     },
                     json: function () {
                         return res.json(vm);
