@@ -86,7 +86,7 @@ const methodKey = 'httpMethod';
 //     return Reflect.defineMetadata(methodKey, verb, target, key);
 // }
 export function getHttpMethod(target: any, propKey: string) {
-    console.log('GETGET', target, propKey);
+    // console.log('GETGET', target, propKey);
     // return Reflect.getMetadata(methodKey, target, propKey);
     const metadata = target[Symbol.metadata];
     return metadata[propKey][methodKey]
@@ -102,7 +102,7 @@ export function getHttpMethod(target: any, propKey: string) {
 // }
 export function Get(route: string): any {
     return function (_target: any, context: ClassMethodDecoratorContext) {
-        console.log(_target, context);
+        // console.log(_target, context);
         if (context && context.metadata) {
             context.metadata[context.name] = context.metadata[context.name] || {}
             context.metadata[context.name][methodKey] = 'get';
@@ -112,28 +112,57 @@ export function Get(route: string): any {
 
 
 }
-
 export function Post(route?): any {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'post', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (target: any, context: ClassMethodDecoratorContext) {
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {}
+            context.metadata[context.name][methodKey] = 'post';
+            setRoute(route, context);
+        }
     }
 
 }
 export function Put(route?): any {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'put', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (_target: any, context: ClassMethodDecoratorContext) {
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {}
+            context.metadata[context.name][methodKey] = 'put';
+            setRoute(route, context);
+        }
     }
 
 }
 export function Delete(route?): any {
-    return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'delete', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (_target: any, context: ClassMethodDecoratorContext) {
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {}
+            context.metadata[context.name][methodKey] = 'delete';
+            setRoute(route, context);
+        }
     }
 
 }
+// export function Post(route?): any {
+//     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'post', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+
+// }
+// export function Put(route?): any {
+//     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'put', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+
+// }
+// export function Delete(route?): any {
+//     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'delete', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+
+// }
 
 
 const middlewareKey = 'MIDDLEWARE';

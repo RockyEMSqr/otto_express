@@ -33,19 +33,49 @@ var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, 
     done = true;
 };
 import "reflect-metadata";
+// polyfill.ts
+// Check if Symbol.metadata is already defined.
+// If not, define it using Symbol.for to ensure global uniqueness.
+if (typeof Symbol.metadata === 'undefined') {
+    Symbol.metadata = Symbol.for('Symbol.metadata');
+}
 const RouteKey = 'Route';
 const ControllerKey = 'Contoller';
-function setRoute(route, target, propertyKey) {
-    if (route) {
-        Reflect.defineMetadata(RouteKey, route, target, propertyKey);
+// function setRoute(route: string, target: Object, propertyKey?: string) {
+//     if (propertyKey) {
+//         Reflect.defineMetadata(RouteKey, route, target, propertyKey);
+//     } else {
+//         Reflect.defineMetadata(RouteKey, route, target);
+//     }
+function setRoute(route, context) {
+    let metadata = context[Symbol.metadata] || context.metadata; //[Symbol.metadata];
+    metadata = metadata || {};
+    if (context.kind == 'method') {
+        metadata[context.name] = metadata[context.name] || {};
+        metadata[context.name][RouteKey] = route;
     }
+    else {
+        metadata[RouteKey] = route;
+    }
+    // return metadata[propKey][methodKey]
 }
+// }
+// export function Controller(route?) {
+//     return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
+//         if (route) {
+//             setRoute(route, target, propertyKey);
+//         }
+//         Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
+//     }
+// }
 export function Controller(route) {
-    return function (target, propertyKey, descriptor) {
-        if (route) {
-            setRoute(route, target, propertyKey);
-        }
-        Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
+    return (target) => {
+        setRoute(route, target);
+        Reflect.defineMetadata(ControllerKey, route, target);
+        // Initialize the routes array if it doesn't exist
+        // if (!Reflect.hasMetadata(CONTROLLER_ROUTES_METADATA, target)) {
+        //     Reflect.defineMetadata(CONTROLLER_ROUTES_METADATA, [], target);
+        // }
     };
 }
 export function getController(target) {
@@ -62,43 +92,88 @@ export function Route(route) {
     return Reflect.metadata(RouteKey, route);
 }
 export function getRoute(target, propKey) {
+    const metadata = target[Symbol.metadata];
+    if (propKey) {
+        return metadata[propKey][RouteKey];
+    }
+    return metadata[RouteKey];
     if (target && propKey) {
         return Reflect.getMetadata(RouteKey, target, propKey);
     }
     return Reflect.getMetadata(RouteKey, target);
 }
 const methodKey = 'httpMethod';
-function setHttpMethodMeta(verb, target, key, desc) {
-    return Reflect.defineMetadata(methodKey, verb, target, key);
-}
+// function setHttpMethodMeta(verb, target, key, desc) {
+//     return Reflect.defineMetadata(methodKey, verb, target, key);
+// }
 export function getHttpMethod(target, propKey) {
-    return Reflect.getMetadata(methodKey, target, propKey);
+    // console.log('GETGET', target, propKey);
+    // return Reflect.getMetadata(methodKey, target, propKey);
+    const metadata = target[Symbol.metadata];
+    return metadata[propKey][methodKey];
 }
 // Http Methods
+// export function Get(route: string): any {
+//     return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'get', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+// }
 export function Get(route) {
-    return function (target, propertyKey, descriptor) {
-        Reflect.defineMetadata(methodKey, 'get', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (_target, context) {
+        // console.log(_target, context);
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {};
+            context.metadata[context.name][methodKey] = 'get';
+            setRoute(route, context);
+        }
     };
 }
 export function Post(route) {
-    return function (target, propertyKey, descriptor) {
-        Reflect.defineMetadata(methodKey, 'post', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (target, context) {
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {};
+            context.metadata[context.name][methodKey] = 'post';
+            setRoute(route, context);
+        }
     };
 }
 export function Put(route) {
-    return function (target, propertyKey, descriptor) {
-        Reflect.defineMetadata(methodKey, 'put', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (_target, context) {
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {};
+            context.metadata[context.name][methodKey] = 'put';
+            setRoute(route, context);
+        }
     };
 }
 export function Delete(route) {
-    return function (target, propertyKey, descriptor) {
-        Reflect.defineMetadata(methodKey, 'delete', target, propertyKey);
-        setRoute(route, target, propertyKey);
+    return function (_target, context) {
+        if (context && context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {};
+            context.metadata[context.name][methodKey] = 'delete';
+            setRoute(route, context);
+        }
     };
 }
+// export function Post(route?): any {
+//     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'post', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+// }
+// export function Put(route?): any {
+//     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'put', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+// }
+// export function Delete(route?): any {
+//     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
+//         Reflect.defineMetadata(methodKey, 'delete', target, propertyKey);
+//         setRoute(route, target, propertyKey);
+//     }
+// }
 const middlewareKey = 'MIDDLEWARE';
 function setMiddleware(middleware) {
     return function (target, propertyKey, descriptor) {

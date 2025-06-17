@@ -1,5 +1,10 @@
 import "reflect-metadata";
-export declare function Controller(route?: any): (target: any, propertyKey?: string, descriptor?: PropertyDescriptor) => void;
+declare global {
+    interface SymbolConstructor {
+        readonly metadata: unique symbol;
+    }
+}
+export declare function Controller(route: string): ClassDecorator;
 export declare function getController(target: any): any;
 export declare function AutoMount(): {
     (target: Function): void;
@@ -11,8 +16,8 @@ export declare function Route(route: any): {
     (target: Object, propertyKey: string | symbol): void;
 };
 export declare function getRoute(target: any, propKey?: any): any;
-export declare function getHttpMethod(target: any, propKey: any): any;
-export declare function Get(route?: any): any;
+export declare function getHttpMethod(target: any, propKey: string): any;
+export declare function Get(route: string): any;
 export declare function Post(route?: any): any;
 export declare function Put(route?: any): any;
 export declare function Delete(route?: any): any;
