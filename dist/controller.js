@@ -47,7 +47,7 @@ const ControllerKey = 'Contoller';
 //     } else {
 //         Reflect.defineMetadata(RouteKey, route, target);
 //     }
-function setRoute(route, context) {
+function setRoute(route, context, propKey) {
     let metadata = context[Symbol.metadata] || context.metadata; //[Symbol.metadata];
     metadata = metadata || {};
     if (context.kind == 'method') {
@@ -57,7 +57,12 @@ function setRoute(route, context) {
     else {
         metadata[RouteKey] = route;
     }
-    // return metadata[propKey][methodKey]
+    console.log('SetRoute::', route, context);
+    // if (propertyKey) {
+    //     Reflect.defineMetadata(RouteKey, route, target, propertyKey);
+    // } else {
+    //     Reflect.defineMetadata(RouteKey, route, target);
+    // }
 }
 // }
 // export function Controller(route?) {
@@ -79,7 +84,9 @@ export function Controller(route) {
     };
 }
 export function getController(target) {
-    return Reflect.getMetadata(ControllerKey, target);
+    let retVal = Reflect.getMetadata(ControllerKey, target);
+    console.log('getController', retVal, target);
+    return retVal;
 }
 const AutoMountKey = 'AutoMount';
 export function AutoMount() {
@@ -93,10 +100,12 @@ export function Route(route) {
 }
 export function getRoute(target, propKey) {
     const metadata = target[Symbol.metadata];
-    if (propKey) {
-        return metadata[propKey][RouteKey];
+    if (metadata) {
+        if (propKey) {
+            return metadata[propKey][RouteKey];
+        }
+        return metadata[RouteKey];
     }
-    return metadata[RouteKey];
     if (target && propKey) {
         return Reflect.getMetadata(RouteKey, target, propKey);
     }
@@ -110,7 +119,10 @@ export function getHttpMethod(target, propKey) {
     // console.log('GETGET', target, propKey);
     // return Reflect.getMetadata(methodKey, target, propKey);
     const metadata = target[Symbol.metadata];
-    return metadata[propKey][methodKey];
+    if (metadata && metadata[propKey]) {
+        return metadata[propKey][methodKey];
+    }
+    return Reflect.getMetadata(methodKey, target, propKey);
 }
 // Http Methods
 // export function Get(route: string): any {
@@ -119,14 +131,34 @@ export function getHttpMethod(target, propKey) {
 //         setRoute(route, target, propertyKey);
 //     }
 // }
+function getMetadata(target, context, key) {
+    if (typeof context == 'object') {
+        if (context.metadata) {
+            context.metadata[context.name] = context.metadata[context.name] || {};
+            return context.metadata[context.name];
+        }
+    }
+    else if (typeof context == 'string') {
+        let md = target[Symbol.metadata] || {};
+        md[context] = md[context] || {};
+        return md[context];
+    }
+}
 export function Get(route) {
     return function (_target, context) {
-        // console.log(_target, context);
-        if (context && context.metadata) {
-            context.metadata[context.name] = context.metadata[context.name] || {};
-            context.metadata[context.name][methodKey] = 'get';
-            setRoute(route, context);
+        let md = getMetadata(_target, context);
+        if (!md) {
+            debugger;
         }
+        // md[context.name] = context.metadata[context.name] || {}
+        md[methodKey] = 'get';
+        setRoute(route, context);
+        // console.log(_target, context);
+        // if (context && context.metadata) {
+        //     context.metadata[context.name] = context.metadata[context.name] || {}
+        //     context.metadata[context.name][methodKey] = 'get';
+        //     setRoute(route, context);
+        // }
     };
 }
 export function Post(route) {

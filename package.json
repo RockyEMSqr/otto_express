@@ -37,5 +37,8 @@
     "htm": "^3.1.0",
     "preact-render-to-string": "^5.1.19",
     "typescript": "^5.7.2"
+  },
+  "optionalDependencies": {
+    "pug": "^3.0.3"
   }
 }
