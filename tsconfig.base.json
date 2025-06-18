@@ -1,0 +1,21 @@
+// tsconfig.base.json
+{
+    "compilerOptions": {
+        "target": "es2022", // Or a more recent ES version (Node 20 supports es2022 features)
+        "lib": [
+            "es2022"
+        ], // Standard library features
+        "strict": true, // Enable all strict type-checking options
+        "esModuleInterop": true, // Allows default imports from modules with no default export
+        "skipLibCheck": true, // Skip type checking of declaration files (for speed)
+        "forceConsistentCasingInFileNames": true, // Ensure consistent file naming
+        "declaration": true, // Generate .d.ts files
+        "declarationMap": true, // Generate source maps for declarations
+        "sourceMap": true, // Generate .js.map files for debugging
+        "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export (ESM interop)
+    },
+    "exclude": [
+        "node_modules",
+        "dist" // Exclude the output directory to prevent circular compilation
+    ]
+}

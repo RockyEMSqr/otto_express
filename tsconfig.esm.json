@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "module": "NodeNext", // Output ES Modules, Node.js-aware resolution
+        "moduleResolution": "NodeNext", // Use Node.js's native module resolution algorithm
+        "outDir": "./dist/esm", // Output to an 'esm' subdirectory
+        "rootDir": "./src" // Source root
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}
