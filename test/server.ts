@@ -1,4 +1,4 @@
-import { oexpress, router } from '../index';
+import { oexpress, router } from '../';
 let app = oexpress({
     useSQliteFileStore: true,
     publicFolders: ['test/public', 'test/public2'],

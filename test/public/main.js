@@ -25,7 +25,18 @@ let RestClient = {
                     }
                 });
             return await res.json();
-        }
+        },
+        delete: async (index) => {
+            let res = await fetch(`/api/people/${index}`,
+                {
+                    method: 'DELETE',
+                    // body: JSON.stringify({ index }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            return await res.json();
+        },
     }
 };
 function dset(obj, keys, val) {
@@ -68,7 +79,8 @@ function formDataToObject(form) {
             let removeButton = document.createElement('button');
             removeButton.innerText = '(x)';
             removeButton.onclick = async () => {
-                await RestClient.people.remove(i);
+                // await RestClient.people.remove(i);
+                await RestClient.people.delete(i);
                 await loadPeople();
             };
             li.append(removeButton);

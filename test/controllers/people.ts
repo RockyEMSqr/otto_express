@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from "../..";
+import { Controller, Delete, Get, Post } from "../..";
 import type { Request, Response } from 'express';
 
 const people = [
@@ -23,6 +23,11 @@ export class PeopleController {
     @Post('/remove')
     remove(req: Request, res: Response) {
         people.splice(req.body.index)
+        res.json(people.length);
+    }
+    @Delete('/:index')
+    delete(req: Request, res: Response) {
+        people.splice(Number(req.params.index))
         res.json(people.length);
     }
 }

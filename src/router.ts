@@ -159,6 +159,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 					await method.call(ctrl, req, res, next);
 				}
 				catch (err) {
+					console.error(err);
 					next(err);
 				}
 				if (process.env.F_PROFILE) {
