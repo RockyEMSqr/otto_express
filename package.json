@@ -10,7 +10,8 @@
   "scripts": {
     "test": "DEBUG=1 node --inspect -r esbuild-register test/server.ts",
     "test:swc": "node --inspect -r @swc/register test/server.ts",
-    "build": "tsc -p tsconfig_bundle.json"
+    "build": "tsc -p tsconfig_bundle.json",
+    "test:utils": "node -r esbuild-register test/utils.test.ts"
   },
   "repository": {
     "type": "git",
