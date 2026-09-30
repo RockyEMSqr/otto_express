@@ -4,6 +4,11 @@ import { pathToFileURL } from 'url';
 
 export type ModuleLoader = (specifier: string) => Promise<any>;
 
+const nativeImport: ModuleLoader = new Function(
+    'specifier',
+    'return import(specifier);'
+) as ModuleLoader;
+
 export function isJsFile(file) {
     return path.extname(file).toLowerCase() === ".js";
 }
@@ -51,18 +56,24 @@ export function rrequireDirTS(dir) {
 }
 
 /**
- * Recursively imports JS/TS modules from a directory.
- * import() supports both ESM and CommonJS modules.
- * The loader is injectable so test runners such as Vitest can provide
- * transformed modules (for example from import.meta.glob).
+ * Recursively loads JavaScript/TypeScript modules from a directory.
+ *
+ * Native import() can load ESM and CommonJS modules. The import is created
+ * with Function so a CommonJS TypeScript build cannot rewrite it to require().
+ *
+ * A loader may be injected by test/build tools (for example Vitest/Vite using
+ * import.meta.glob) when they need to transform modules before loading them.
  */
-export async function rrequireDir(dir: string, loader: ModuleLoader = specifier => import(specifier)) {
+export async function rrequireDir(dir: string, loader: ModuleLoader = nativeImport) {
     var ex = Object.create(null);
     var files = lsModules_r(dir);
+
     for (let i = 0; i < files.length; i++) {
         const f = files[i];
-        ex[f] = await loader(pathToFileURL(path.resolve(f)).href);
+        const specifier = pathToFileURL(path.resolve(f)).href;
+        ex[f] = await loader(specifier);
     }
+
     return ex;
 }
 export function requireDir(dir) {
