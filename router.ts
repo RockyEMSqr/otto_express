@@ -2,7 +2,20 @@ import utils = require('./utils');
 import path = require('path');
 import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller';
 
-export async function router(app, conf) {
+export type ControllerModules = Record<string, any>;
+
+export interface RouterConfig {
+	controllers?: string;
+	middleware?: any[];
+	area?: string;
+	/**
+	 * Preloaded controller modules. Useful with Vite/Vitest import.meta.glob().
+	 * When supplied, filesystem module discovery is skipped.
+	 */
+	modules?: ControllerModules;
+}
+
+export async function router(app, conf: RouterConfig = {}) {
 	let cwd = process.cwd();
 	let defaults = {
 		controllers: path.join(cwd, '/controllers'),
@@ -25,8 +38,8 @@ export async function router(app, conf) {
 	}
 }
 
-async function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
-	var mods = await utils.rrequireDir(dir);
+async function mountDir(app, dir, opts: { middleware: any[], area?: string, modules?: ControllerModules }) {
+	var mods = opts.modules || await utils.rrequireDir(dir);
 	for (let key in mods) {
 		let mod = mods[key];
 		for (let mkey in mod) {
