@@ -1,3 +1,4 @@
+import { Delete } from "../../../controller";
 import { Controller, Get, Post } from "../../../dist";
 import type { Request, Response } from 'express';
 
@@ -20,9 +21,14 @@ export class PeopleController {
         people.push(req.body);
         res.json(people.length);
     }
+    @Delete('/remove')
     @Post('/remove')
     remove(req: Request, res: Response) {
         people.splice(req.body.index)
         res.json(people.length);
+    }
+    @Get('/throw')
+    throw(req: Request, res: Response) {
+        throw new Error('This is a test error');
     }
 }

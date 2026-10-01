@@ -1,6 +1,6 @@
 import utils = require('./utils');
 import path = require('path');
-import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller';
+import { getAutoMount, getRoute, getHttpMethods, getMiddleWare, getController } from './controller';
 
 export type ControllerModules = Record<string, any>;
 
@@ -34,6 +34,11 @@ export async function router(app, conf: RouterConfig = {}) {
 	} else {
 		await mountDir(app, path.join(cwd, conf.controllers!), conf);
 		return (req, res, next) => {
+			/** 
+			 * hits when app doesn't handle route.  
+			 * Should it do something with the unhandled request?  Or should it just call next() and let the app handle it?
+			 * 
+			 * */
 			next();
 		}
 	}
@@ -81,7 +86,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 	preHandlers = preHandlers.filter(x => x != undefined);
 	var ctrl = new C();
 	let proto = Object.getPrototypeOf(ctrl);
-	let names = [];
+	let names: string[] = [];
 
 	while (proto && proto.constructor.name != "Object") {
 		names = names.concat(Object.getOwnPropertyNames(proto));
@@ -95,7 +100,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 
 		let actionRoute = getRoute(ctrl, name);
 		let controllerRoute = getRoute(C);
-		let httpMethod = getHttpMethod(ctrl, name);
+		let httpMethods = getHttpMethods(ctrl, name);
 		var route: string | string[] = '/';
 		if (area) {
 			route += `${area}/`;
@@ -110,7 +115,9 @@ export function setupController(app, C, area?, ...preHandlers) {
 			if (Array.isArray(actionRoute)) {
 				let routes = actionRoute.map(x => route + trimLeadingSlash(x));
 				route = routes;
-				console.log(route);
+				if (process.env.DEBUG) {
+					console.log('ROUte is an array', route);
+				}
 			} else {
 				if (actionRoute != '/') {
 					route += trimLeadingSlash(actionRoute);
@@ -119,7 +126,10 @@ export function setupController(app, C, area?, ...preHandlers) {
 		} else {
 			route += name
 		}
-		let allMiddleware = [].concat(preHandlers);
+		let allMiddleware: any[] = []
+		if (preHandlers) {
+			allMiddleware = allMiddleware.concat(preHandlers);
+		}
 		let methodMiddleware = getMiddleWare(ctrl, name);
 		if (methodMiddleware) {
 			if (Array.isArray(methodMiddleware)) {
@@ -138,7 +148,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 			}
 		}
 
-		if (httpMethod) {
+		for (let httpMethod of httpMethods) {
 			app[httpMethod](route, allMiddleware, async function (req, res, next) {
 				if (process.env.F_PROFILE) {
 					console.time(req.path);
@@ -155,7 +165,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 			});
 		}
 		if (process.env.DEBUG) {
-			console.log(`method: ${httpMethod} \t ctrl: ${controllerRoute} \t action: ${actionRoute || name}\n route: ${route} --middleware: ${allMiddleware.map(x => x.name).join(', ')}`)
+			console.log(`method: ${httpMethods.join(', ')} \t ctrl: ${controllerRoute} \t action: ${actionRoute || name}\n route: ${route} --middleware: ${allMiddleware.map(x => x.name).join(', ')}`)
 		}
 	}
 }

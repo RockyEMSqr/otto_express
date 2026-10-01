@@ -11,7 +11,7 @@ export function Controller(route?) {
         if (route) {
             setRoute(route, target, propertyKey);
         }
-        Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
+        Reflect.defineMetadata(ControllerKey, true, target, propertyKey!);
     }
 
 }
@@ -40,38 +40,45 @@ export function getRoute(target, propKey?) {
 }
 
 const methodKey = 'httpMethod';
-function setHttpMethodMeta(verb, target, key, desc) {
-    return Reflect.defineMetadata(methodKey, verb, target, key);
+function setHttpMethodMeta(verb, target, key) {
+    const existing = Reflect.getMetadata(methodKey, target, key);
+    const methods = Array.isArray(existing) ? existing : existing ? [existing] : [];
+    return Reflect.defineMetadata(methodKey, [verb, ...methods], target, key);
 }
 export function getHttpMethod(target, propKey) {
-    return Reflect.getMetadata(methodKey, target, propKey);
+    const methods = getHttpMethods(target, propKey);
+    return methods[0];
+}
+export function getHttpMethods(target, propKey) {
+    const methods = Reflect.getMetadata(methodKey, target, propKey);
+    return Array.isArray(methods) ? methods : methods ? [methods] : [];
 }
 
 // Http Methods
 export function Get(route?): any {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'get', target, propertyKey);
+        setHttpMethodMeta('get', target, propertyKey);
         setRoute(route, target, propertyKey);
     }
 
 }
 export function Post(route?): any {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'post', target, propertyKey);
+        setHttpMethodMeta('post', target, propertyKey);
         setRoute(route, target, propertyKey);
     }
 
 }
 export function Put(route?): any {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'put', target, propertyKey);
+        setHttpMethodMeta('put', target, propertyKey);
         setRoute(route, target, propertyKey);
     }
 
 }
 export function Delete(route?): any {
     return function (target, propertyKey: string, descriptor: PropertyDescriptor) {
-        Reflect.defineMetadata(methodKey, 'delete', target, propertyKey);
+        setHttpMethodMeta('delete', target, propertyKey);
         setRoute(route, target, propertyKey);
     }
 
@@ -81,7 +88,7 @@ export function Delete(route?): any {
 const middlewareKey = 'MIDDLEWARE';
 function setMiddleware(middleware) {
     return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
-        Reflect.defineMetadata(middlewareKey, middleware, target, propertyKey);
+        Reflect.defineMetadata(middlewareKey, middleware, target, propertyKey!);
     }
 }
 export function Middleware(middleware) {
@@ -195,28 +202,28 @@ export abstract class JSONNotNamedController {
         res.json(obj);
     }
 }
-export abstract class PaginatedAPIController extends JSONNotNamedController{
+export abstract class PaginatedAPIController extends JSONNotNamedController {
     abstract getDS(req: any)//PaginatedDS<any, DataService>
-    abstract getFilterWhere<DS=any>(ds:DS, body):Promise<any>
+    abstract getFilterWhere<DS = any>(ds: DS, body): Promise<any>
     @Get('/paginate')
-    async paginate(req, res){
+    async paginate(req, res) {
         res.json(await this.getDS(req).paginate(this.populate, Number(req.query.page), {}, Number(req.query.pageSize)))
     }
     @Post('paginate/filter')
-    async paginateFilter(req, res){
+    async paginateFilter(req, res) {
         let where = await this.getFilterWhere(req.ds, req.body);
         console.log('FILTER WHERE', JSON.stringify(where));
         res.json(await this.getDS(req).paginate(this.populate, Number(req.query.page), where, Number(req.query.pageSize), req.query.sortKey as any, Number(req.query.sortDir)))
     }
     @Post('delete/')
-    async deleteThis(req,res){
+    async deleteThis(req, res) {
         await this.getDS(req).deleteThisOne(req.body._id);
-        res.json({ok:1});
+        res.json({ ok: 1 });
     }
     @Post('delete/:id')
-    async deleteThisOne(req,res){
+    async deleteThisOne(req, res) {
         await this.getDS(req).deleteThisOne(req.params.id);
-        res.json({ok:1});
+        res.json({ ok: 1 });
     }
     // abstract generateCSVData<D>(data:D):any[][];
     // @Post('exportExcel')

@@ -38,12 +38,13 @@ async function run() {
     });
 
     assert.equal(typeof middleware, 'function');
-    assert.equal(registered.length, 2);
+    assert.equal(registered.length, 3);
     assert.equal(registered[0].method, 'get');
     assert.equal(registered[0].route, '/test/hello');
     assert.equal(registered[1].method, 'get');
     assert.equal(registered[1].route, '/multi/resource');
-    assert.equal(registered.some(route => route.method === 'delete'), false);
+    assert.equal(registered[2].method, 'delete');
+    assert.equal(registered[2].route, '/multi/resource');
 
     console.log('router preloaded module tests passed');
 }
