@@ -1,11 +1,9 @@
 {
   "name": "@emsquared/otto_express",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/index.js",
-  "module": "dist/index.module.js",
-  "umd:main": "dist/index.umd.js",
-  "unpkg": "dist/index.min.js",
+  "types": "dist/index.d.ts",
   "source": "index.ts",
   "scripts": {
     "test": "DEBUG=1 node --inspect -r esbuild-register test/app/server.ts",
