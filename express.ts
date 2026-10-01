@@ -31,7 +31,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		pwd: process.cwd(),
 		cwd: process.cwd(),
 		views: 'views',
-		viewEngine: null, //'pug',
+		viewEngine: undefined, //'pug',
 		publicFolders: ['public'],
 		useSessionFileStore: false,
 		useSQliteFileStore: false,
@@ -41,7 +41,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		},
 		port: 3000
 	}
-	var config: facile_express_config = { ...defaults };
+	let config: facile_express_config = { ...defaults };
 	if (typeof configOrPath == 'string') {
 		config = { ...config, ...require(configOrPath) }
 	} else if (typeof configOrPath == 'object') {
@@ -51,6 +51,13 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 	if (process.env.DEBUG) {
 		console.log('FACILE CONFIG:', config);
 	}
+
+
+	var bodyParser = require('body-parser');
+
+
+
+	var app = express();
 	if (config.serveFavicon) {
 		let favicon = require('serve-favicon');
 		// app.use(favicon);
@@ -60,12 +67,6 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		let logger = require('morgan');
 		app.use(logger('dev'));
 	}
-
-	var bodyParser = require('body-parser');
-
-
-
-	var app = express();
 	/**
 	 * monkey patch to allow dots
 	 */
@@ -88,12 +89,12 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 	app.set('x-powered-by', false);
 	// view engine setup
-	app.set('views', path.join(config.cwd, config.views));
+	app.set('views', path.join(config.cwd!, config.views!));
 	if (config.viewEngine) {
 		app.set('view engine', config.viewEngine);
 	}
-	for (let i = 0; i < config.publicFolders.length; i++) {
-		app.use(express.static(path.join(config.cwd, config.publicFolders[i])));
+	for (let i = 0; i < (config?.publicFolders?.length || 0); i++) {
+		app.use(express.static(path.join(config.cwd!, config.publicFolders![i])));
 	}
 
 	if (config.useSessionFileStore || config.useSQliteFileStore || config.useThisSessionStore) {
@@ -128,10 +129,10 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 		}
 		app.use(session({
 			store: sessionStore,
-			secret: config.session.secret,
+			secret: config.session?.secret,
 			resave: true,
 			saveUninitialized: true,
-			name: config.session.name
+			name: config.session?.name
 		}));
 	}
 
@@ -163,7 +164,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 				/**
 				 * if accept header is * then lets send back what they sent us
 				 */
-				if (req.headers.accept.indexOf('*') > -1) {
+				if ((req.headers.accept?.indexOf('*') || 0) > -1) {
 					if (req.headers["content-type"] && req.headers["content-type"].indexOf('application/json') > -1) {
 						return res.json(vm);
 					} else {
@@ -318,7 +319,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 			var addr = server.address();
 			var bind = typeof addr === 'string'
 				? 'pipe ' + addr
-				: 'port ' + addr.port;
+				: 'port ' + addr?.port;
 			console.info('Listening on ' + bind);
 		}
 
@@ -332,5 +333,5 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 
 
-export var oexpress = createApp;
+export const oexpress = createApp;
 // export default createApp;

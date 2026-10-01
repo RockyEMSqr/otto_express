@@ -8,9 +8,12 @@
   "unpkg": "dist/index.min.js",
   "source": "index.ts",
   "scripts": {
-    "test": "DEBUG=1 node --inspect -r esbuild-register test/server.ts",
-    "test:swc": "node --inspect -r @swc/register test/server.ts",
-    "build": "tsc -p tsconfig_bundle.json"
+    "test": "DEBUG=1 node --inspect -r esbuild-register test/app/server.ts",
+    "test:swc": "node --inspect -r @swc/register test/app/server.ts",
+    "build": "tsc -p tsconfig_bundle.json",
+    "test:utils": "node -r esbuild-register test/utils.test.ts",
+    "test:router-modules": "node -r esbuild-register test/router-modules.test.ts",
+    "test:unit": "npm run test:utils && npm run test:router-modules"
   },
   "repository": {
     "type": "git",

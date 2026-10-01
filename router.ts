@@ -1,43 +1,55 @@
 import utils = require('./utils');
 import path = require('path');
-import { getAutoMount, getRoute, getHttpMethod, getMiddleWare, getController } from './controller';
-export function router(app, conf) {
+import { getAutoMount, getRoute, getHttpMethods, getMiddleWare, getController } from './controller';
+
+export type ControllerModules = Record<string, any>;
+
+export interface RouterConfig {
+	controllers?: string;
+	middleware?: any[];
+	area?: string;
+	/**
+	 * Preloaded controller modules. Useful with Vite/Vitest import.meta.glob().
+	 * When supplied, filesystem module discovery is skipped.
+	 */
+	modules?: ControllerModules;
+}
+
+export async function router(app, conf: RouterConfig = {}) {
 	let cwd = process.cwd();
 	let defaults = {
 		controllers: path.join(cwd, '/controllers'),
-		middleware: [],
-		area: null
+		middleware: undefined,
+		area: undefined,
+		modules: undefined
 	}
 	conf = { ...defaults, ...conf };
 	let dev = false;
 	if (dev) {
-		mountDir(app, conf.controllers, conf);
-		return (req, res, next) => {
-			mountDir(app, path.join(cwd, conf.controllers), conf);
-
+		await mountDir(app, conf.controllers, conf);
+		return async (req, res, next) => {
+			await mountDir(app, path.join(cwd, conf.controllers!), conf);
 			next();
 		}
 	} else {
-		mountDir(app, path.join(cwd, conf.controllers), conf);
+		await mountDir(app, path.join(cwd, conf.controllers!), conf);
 		return (req, res, next) => {
+			/** 
+			 * hits when app doesn't handle route.  
+			 * Should it do something with the unhandled request?  Or should it just call next() and let the app handle it?
+			 * 
+			 * */
 			next();
 		}
 	}
-
 }
-function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
-	//TODO(rc): check if using ts-node
-	var mods = utils.rrequireDir(dir);
-	for (let key in mods) {
 
-		//module/file
+async function mountDir(app, dir, opts: { middleware?: any[], area?: string, modules?: ControllerModules }) {
+	var mods = opts.modules || await utils.rrequireDir(dir);
+	for (let key in mods) {
 		let mod = mods[key];
 		for (let mkey in mod) {
-
 			let mem = mod[mkey];
-			//check if class
-			//console.log(key, mkey, typeof mem, mem && mem.constructor);
-			//TODO(rocky): handle mem null better?
 			if (mem && mem.constructor) {
 				let mount = getAutoMount(mem);
 				let controller = getController(mem);
@@ -51,15 +63,9 @@ function mountDir(app, dir, opts: { middleware: any[], area?: string }) {
 export function SetupArea(app, dir, area?, ...preHanders) {
 	var mods = utils.requireDir(dir);
 	for (let key in mods) {
-
-		//module/file
 		let mod = mods[key];
 		for (let mkey in mod) {
-
 			let mem = mod[mkey];
-			//check if class
-			//console.log(key, mkey, typeof mem, mem && mem.constructor);
-			//TODO(rocky): handle mem null better?
 			if (mem && mem.constructor) {
 				let mount = getAutoMount(mem);
 				if (mount) {
@@ -79,28 +85,22 @@ export function setupController(app, C, area?, ...preHandlers) {
 	preHandlers = [].concat(...preHandlers);
 	preHandlers = preHandlers.filter(x => x != undefined);
 	var ctrl = new C();
-
-	// console.log(ctrl, C, C.name, ctrl.name);
 	let proto = Object.getPrototypeOf(ctrl);
-	let names = []; //Object.getOwnPropertyNames(proto);
+	let names: string[] = [];
 
 	while (proto && proto.constructor.name != "Object") {
 		names = names.concat(Object.getOwnPropertyNames(proto));
 		proto = Object.getPrototypeOf(proto);
 	}
 	for (let name of names) {
-
 		let method = ctrl[name];
-		//skip ctor
 		if (method === C) {
 			continue;
 		}
-		//TODO: check if method is private?
 
 		let actionRoute = getRoute(ctrl, name);
 		let controllerRoute = getRoute(C);
-
-		let httpMethod = getHttpMethod(ctrl, name); //|| 'get'; //default to a get
+		let httpMethods = getHttpMethods(ctrl, name);
 		var route: string | string[] = '/';
 		if (area) {
 			route += `${area}/`;
@@ -114,22 +114,22 @@ export function setupController(app, C, area?, ...preHandlers) {
 		if (actionRoute) {
 			if (Array.isArray(actionRoute)) {
 				let routes = actionRoute.map(x => route + trimLeadingSlash(x));
-
 				route = routes;
-				console.log(route);
+				if (process.env.DEBUG) {
+					console.log('ROUte is an array', route);
+				}
 			} else {
-				if (actionRoute == '/') {
-
-				} else {
-
+				if (actionRoute != '/') {
 					route += trimLeadingSlash(actionRoute);
 				}
 			}
 		} else {
 			route += name
 		}
-		let allMiddleware = [].concat(preHandlers);
-		//todo(rc): method middleware comes first?
+		let allMiddleware: any[] = []
+		if (preHandlers) {
+			allMiddleware = allMiddleware.concat(preHandlers);
+		}
 		let methodMiddleware = getMiddleWare(ctrl, name);
 		if (methodMiddleware) {
 			if (Array.isArray(methodMiddleware)) {
@@ -137,7 +137,6 @@ export function setupController(app, C, area?, ...preHandlers) {
 			} else {
 				allMiddleware = allMiddleware.concat(methodMiddleware);
 			}
-
 		}
 
 		let controllerMiddleware = getMiddleWare(C);
@@ -147,10 +146,9 @@ export function setupController(app, C, area?, ...preHandlers) {
 			} else {
 				allMiddleware = allMiddleware.concat(controllerMiddleware);
 			}
-
 		}
 
-		if (httpMethod) {
+		for (let httpMethod of httpMethods) {
 			app[httpMethod](route, allMiddleware, async function (req, res, next) {
 				if (process.env.F_PROFILE) {
 					console.time(req.path);
@@ -167,7 +165,7 @@ export function setupController(app, C, area?, ...preHandlers) {
 			});
 		}
 		if (process.env.DEBUG) {
-			console.log(`method: ${httpMethod} \t ctrl: ${controllerRoute} \t action: ${actionRoute || name}\n route: ${route} --middleware: ${allMiddleware.map(x => x.name).join(', ')}`)
+			console.log(`method: ${httpMethods.join(', ')} \t ctrl: ${controllerRoute} \t action: ${actionRoute || name}\n route: ${route} --middleware: ${allMiddleware.map(x => x.name).join(', ')}`)
 		}
 	}
 }

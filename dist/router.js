@@ -20,12 +20,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -47,54 +47,85 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupController = exports.SetupArea = exports.router = void 0;
+exports.router = router;
+exports.SetupArea = SetupArea;
+exports.setupController = setupController;
 var utils = require("./utils");
 var path = require("path");
 var controller_1 = require("./controller");
-function router(app, conf) {
-    var cwd = process.cwd();
-    var defaults = {
-        controllers: path.join(cwd, '/controllers'),
-        middleware: [],
-        area: null
-    };
-    conf = __assign(__assign({}, defaults), conf);
-    var dev = false;
-    if (dev) {
-        mountDir(app, conf.controllers, conf);
-        return function (req, res, next) {
-            mountDir(app, path.join(cwd, conf.controllers), conf);
-            next();
-        };
-    }
-    else {
-        mountDir(app, path.join(cwd, conf.controllers), conf);
-        return function (req, res, next) {
-            next();
-        };
-    }
-}
-exports.router = router;
-function mountDir(app, dir, opts) {
-    //TODO(rc): check if using ts-node
-    var mods = utils.rrequireDir(dir);
-    for (var key in mods) {
-        //module/file
-        var mod = mods[key];
-        for (var mkey in mod) {
-            var mem = mod[mkey];
-            //check if class
-            //console.log(key, mkey, typeof mem, mem && mem.constructor);
-            //TODO(rocky): handle mem null better?
-            if (mem && mem.constructor) {
-                var mount = controller_1.getAutoMount(mem);
-                var controller = controller_1.getController(mem);
-                if (mount || controller) {
-                    setupController(app, mem, opts.area, opts.middleware);
-                }
+function router(app_1) {
+    return __awaiter(this, arguments, void 0, function (app, conf) {
+        var cwd, defaults, dev;
+        var _this = this;
+        if (conf === void 0) { conf = {}; }
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    cwd = process.cwd();
+                    defaults = {
+                        controllers: path.join(cwd, '/controllers'),
+                        middleware: undefined,
+                        area: undefined,
+                        modules: undefined
+                    };
+                    conf = __assign(__assign({}, defaults), conf);
+                    dev = false;
+                    if (!dev) return [3 /*break*/, 2];
+                    return [4 /*yield*/, mountDir(app, conf.controllers, conf)];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, mountDir(app, path.join(cwd, conf.controllers), conf)];
+                                    case 1:
+                                        _a.sent();
+                                        next();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); }];
+                case 2: return [4 /*yield*/, mountDir(app, path.join(cwd, conf.controllers), conf)];
+                case 3:
+                    _a.sent();
+                    return [2 /*return*/, function (req, res, next) {
+                            next();
+                        }];
             }
-        }
-    }
+        });
+    });
+}
+function mountDir(app, dir, opts) {
+    return __awaiter(this, void 0, void 0, function () {
+        var mods, _a, key, mod, mkey, mem, mount, controller;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _a = opts.modules;
+                    if (_a) return [3 /*break*/, 2];
+                    return [4 /*yield*/, utils.rrequireDir(dir)];
+                case 1:
+                    _a = (_b.sent());
+                    _b.label = 2;
+                case 2:
+                    mods = _a;
+                    for (key in mods) {
+                        mod = mods[key];
+                        for (mkey in mod) {
+                            mem = mod[mkey];
+                            if (mem && mem.constructor) {
+                                mount = (0, controller_1.getAutoMount)(mem);
+                                controller = (0, controller_1.getController)(mem);
+                                if (mount || controller) {
+                                    setupController(app, mem, opts.area, opts.middleware);
+                                }
+                            }
+                        }
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 function SetupArea(app, dir, area) {
     var preHanders = [];
@@ -103,15 +134,11 @@ function SetupArea(app, dir, area) {
     }
     var mods = utils.requireDir(dir);
     for (var key in mods) {
-        //module/file
         var mod = mods[key];
         for (var mkey in mod) {
             var mem = mod[mkey];
-            //check if class
-            //console.log(key, mkey, typeof mem, mem && mem.constructor);
-            //TODO(rocky): handle mem null better?
             if (mem && mem.constructor) {
-                var mount = controller_1.getAutoMount(mem);
+                var mount = (0, controller_1.getAutoMount)(mem);
                 if (mount) {
                     setupController(app, mem, area, preHanders);
                 }
@@ -119,7 +146,6 @@ function SetupArea(app, dir, area) {
         }
     }
 }
-exports.SetupArea = SetupArea;
 function trimLeadingSlash(r) {
     if (r.substr(0, 1) == '/') {
         r = r.substr(1, r.length);
@@ -134,26 +160,23 @@ function setupController(app, C, area) {
     preHandlers = [].concat.apply([], preHandlers);
     preHandlers = preHandlers.filter(function (x) { return x != undefined; });
     var ctrl = new C();
-    // console.log(ctrl, C, C.name, ctrl.name);
     var proto = Object.getPrototypeOf(ctrl);
-    var names = []; //Object.getOwnPropertyNames(proto);
+    var names = [];
     while (proto && proto.constructor.name != "Object") {
         names = names.concat(Object.getOwnPropertyNames(proto));
         proto = Object.getPrototypeOf(proto);
     }
     var _loop_1 = function (name) {
         var method = ctrl[name];
-        //skip ctor
         if (method === C) {
             return "continue";
         }
-        //TODO: check if method is private?
-        var actionRoute = controller_1.getRoute(ctrl, name);
-        var controllerRoute = controller_1.getRoute(C);
-        var httpMethod = controller_1.getHttpMethod(ctrl, name); //|| 'get'; //default to a get
+        var actionRoute = (0, controller_1.getRoute)(ctrl, name);
+        var controllerRoute = (0, controller_1.getRoute)(C);
+        var httpMethods = (0, controller_1.getHttpMethods)(ctrl, name);
         route = '/';
         if (area) {
-            route += area + "/";
+            route += "".concat(area, "/");
         }
         if (controllerRoute && controllerRoute != '/') {
             if (controllerRoute[0] == '/') {
@@ -165,12 +188,12 @@ function setupController(app, C, area) {
             if (Array.isArray(actionRoute)) {
                 var routes = actionRoute.map(function (x) { return route + trimLeadingSlash(x); });
                 route = routes;
-                console.log(route);
+                if (process.env.DEBUG) {
+                    console.log('ROUte is an array', route);
+                }
             }
             else {
-                if (actionRoute == '/') {
-                }
-                else {
+                if (actionRoute != '/') {
                     route += trimLeadingSlash(actionRoute);
                 }
             }
@@ -178,9 +201,11 @@ function setupController(app, C, area) {
         else {
             route += name;
         }
-        var allMiddleware = [].concat(preHandlers);
-        //todo(rc): method middleware comes first?
-        var methodMiddleware = controller_1.getMiddleWare(ctrl, name);
+        var allMiddleware = [];
+        if (preHandlers) {
+            allMiddleware = allMiddleware.concat(preHandlers);
+        }
+        var methodMiddleware = (0, controller_1.getMiddleWare)(ctrl, name);
         if (methodMiddleware) {
             if (Array.isArray(methodMiddleware)) {
                 allMiddleware = allMiddleware.concat.apply(allMiddleware, methodMiddleware);
@@ -189,7 +214,7 @@ function setupController(app, C, area) {
                 allMiddleware = allMiddleware.concat(methodMiddleware);
             }
         }
-        var controllerMiddleware = controller_1.getMiddleWare(C);
+        var controllerMiddleware = (0, controller_1.getMiddleWare)(C);
         if (controllerMiddleware) {
             if (Array.isArray(controllerMiddleware)) {
                 allMiddleware = allMiddleware.concat.apply(allMiddleware, controllerMiddleware);
@@ -198,7 +223,8 @@ function setupController(app, C, area) {
                 allMiddleware = allMiddleware.concat(controllerMiddleware);
             }
         }
-        if (httpMethod) {
+        for (var _b = 0, httpMethods_1 = httpMethods; _b < httpMethods_1.length; _b++) {
+            var httpMethod = httpMethods_1[_b];
             app[httpMethod](route, allMiddleware, function (req, res, next) {
                 return __awaiter(this, void 0, void 0, function () {
                     var err_1;
@@ -230,7 +256,7 @@ function setupController(app, C, area) {
             });
         }
         if (process.env.DEBUG) {
-            console.log("method: " + httpMethod + " \t ctrl: " + controllerRoute + " \t action: " + (actionRoute || name) + "\n route: " + route + " --middleware: " + allMiddleware.map(function (x) { return x.name; }).join(', '));
+            console.log("method: ".concat(httpMethods.join(', '), " \t ctrl: ").concat(controllerRoute, " \t action: ").concat(actionRoute || name, "\n route: ").concat(route, " --middleware: ").concat(allMiddleware.map(function (x) { return x.name; }).join(', ')));
         }
     };
     var route;
@@ -239,5 +265,4 @@ function setupController(app, C, area) {
         _loop_1(name);
     }
 }
-exports.setupController = setupController;
 //# sourceMappingURL=router.js.map

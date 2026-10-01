@@ -12,6 +12,7 @@ export declare function Route(route: any): {
 };
 export declare function getRoute(target: any, propKey?: any): any;
 export declare function getHttpMethod(target: any, propKey: any): any;
+export declare function getHttpMethods(target: any, propKey: any): any[];
 export declare function Get(route?: any): any;
 export declare function Post(route?: any): any;
 export declare function Put(route?: any): any;
