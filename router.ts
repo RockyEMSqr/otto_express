@@ -19,26 +19,27 @@ export async function router(app, conf: RouterConfig = {}) {
 	let cwd = process.cwd();
 	let defaults = {
 		controllers: path.join(cwd, '/controllers'),
-		middleware: [],
-		area: null
+		middleware: undefined,
+		area: undefined,
+		modules: undefined
 	}
 	conf = { ...defaults, ...conf };
 	let dev = false;
 	if (dev) {
 		await mountDir(app, conf.controllers, conf);
 		return async (req, res, next) => {
-			await mountDir(app, path.join(cwd, conf.controllers), conf);
+			await mountDir(app, path.join(cwd, conf.controllers!), conf);
 			next();
 		}
 	} else {
-		await mountDir(app, path.join(cwd, conf.controllers), conf);
+		await mountDir(app, path.join(cwd, conf.controllers!), conf);
 		return (req, res, next) => {
 			next();
 		}
 	}
 }
 
-async function mountDir(app, dir, opts: { middleware: any[], area?: string, modules?: ControllerModules }) {
+async function mountDir(app, dir, opts: { middleware?: any[], area?: string, modules?: ControllerModules }) {
 	var mods = opts.modules || await utils.rrequireDir(dir);
 	for (let key in mods) {
 		let mod = mods[key];

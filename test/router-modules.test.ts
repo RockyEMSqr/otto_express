@@ -1,5 +1,5 @@
 import assert = require('assert');
-import { Controller, Get } from '../controller';
+import { Controller, Delete, Get } from '../controller';
 import { router } from '../router';
 
 async function run() {
@@ -11,24 +11,39 @@ async function run() {
         }
     }
 
+    @Controller('/multi')
+    class MultiMethodController {
+        @Get('/resource')
+        @Delete('/resource')
+        resource(req, res) {
+            res.send('resource');
+        }
+    }
+
     const registered: Array<{ method: string, route: any }> = [];
     const app: any = {
         get(route) {
             registered.push({ method: 'get', route });
+        },
+        delete(route) {
+            registered.push({ method: 'delete', route });
         }
     };
 
     const middleware = await router(app, {
         controllers: '/this/path/does/not/need/to/exist',
         modules: {
-            '/virtual/test-controller.ts': { TestController }
+            '/virtual/test-controller.ts': { TestController, MultiMethodController }
         }
     });
 
     assert.equal(typeof middleware, 'function');
-    assert.equal(registered.length, 1);
+    assert.equal(registered.length, 2);
     assert.equal(registered[0].method, 'get');
     assert.equal(registered[0].route, '/test/hello');
+    assert.equal(registered[1].method, 'get');
+    assert.equal(registered[1].route, '/multi/resource');
+    assert.equal(registered.some(route => route.method === 'delete'), false);
 
     console.log('router preloaded module tests passed');
 }

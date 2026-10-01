@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from "../..";
+import { Controller, Get, Post } from "../../../dist";
 import type { Request, Response } from 'express';
 
 const people = [
