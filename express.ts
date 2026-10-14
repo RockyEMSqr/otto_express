@@ -3,7 +3,7 @@ import path = require('path')
 // import * as debugModule from 'debug';
 import http = require('http');
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
-export type facile_express = express.Express & { start(): void }
+export type facile_express_app = express.Express & { start(): void, otto_config:facile_express_config }
 interface facile_express_config {
 	views?: string;
 	viewEngine?: string;
@@ -24,9 +24,9 @@ interface facile_express_config {
 	bodyParserJSONOptions?: OptionsJson,
 	bodyParserUrlEncodedOptions?: OptionsUrlencoded
 }
-function createApp(pathToConfig?: string): facile_express;
-function createApp(config?: facile_express_config): facile_express;
-function createApp(configOrPath?: facile_express_config | string): facile_express {
+function createApp(pathToConfig?: string): facile_express_app;
+function createApp(config?: facile_express_config): facile_express_app;
+function createApp(configOrPath?: facile_express_config | string): facile_express_app {
 	let defaults = {
 		pwd: process.cwd(),
 		cwd: process.cwd(),
@@ -58,6 +58,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 
 	var app = express();
+	(<any>app).otto_config = config;
 	if (config.serveFavicon) {
 		let favicon = require('serve-favicon');
 		// app.use(favicon);
@@ -325,7 +326,7 @@ function createApp(configOrPath?: facile_express_config | string): facile_expres
 
 		return server;
 	}
-	return <facile_express>app;
+	return <facile_express_app>app;
 }
 
 

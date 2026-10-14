@@ -1,7 +1,8 @@
 import express = require("express");
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
-export type facile_express = express.Express & {
+export declare type facile_express_app = express.Express & {
     start(): void;
+    otto_config: facile_express_config;
 };
 interface facile_express_config {
     views?: string;
@@ -23,8 +24,8 @@ interface facile_express_config {
     bodyParserJSONOptions?: OptionsJson;
     bodyParserUrlEncodedOptions?: OptionsUrlencoded;
 }
-declare function createApp(pathToConfig?: string): facile_express;
-declare function createApp(config?: facile_express_config): facile_express;
+declare function createApp(pathToConfig?: string): facile_express_app;
+declare function createApp(config?: facile_express_config): facile_express_app;
 export declare const oexpress: typeof createApp;
 export {};
 //# sourceMappingURL=express.d.ts.map

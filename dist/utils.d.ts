@@ -1,4 +1,4 @@
-export type ModuleLoader = (specifier: string) => Promise<any>;
+export declare type ModuleLoader = (specifier: string) => Promise<any>;
 export declare function isJsFile(file: any): boolean;
 export declare function isJsOrTSFile(file: any): boolean;
 export declare function isTSFile(file: any): boolean;

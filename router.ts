@@ -1,6 +1,7 @@
 import utils = require('./utils');
 import path = require('path');
 import { getAutoMount, getRoute, getHttpMethods, getMiddleWare, getController } from './controller';
+import { facile_express_app } from './express';
 
 export type ControllerModules = Record<string, any>;
 
@@ -8,6 +9,7 @@ export interface RouterConfig {
 	controllers?: string;
 	middleware?: any[];
 	area?: string;
+	cwd?:string;
 	/**
 	 * Preloaded controller modules. Useful with Vite/Vitest import.meta.glob().
 	 * When supplied, filesystem module discovery is skipped.
@@ -15,8 +17,8 @@ export interface RouterConfig {
 	modules?: ControllerModules;
 }
 
-export async function router(app, conf: RouterConfig = {}) {
-	let cwd = process.cwd();
+export async function router(app:facile_express_app, conf: RouterConfig = {}) {
+	let cwd = app.otto_config.cwd || conf.cwd || process.cwd();
 	let defaults = {
 		controllers: path.join(cwd, '/controllers'),
 		middleware: undefined,

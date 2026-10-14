@@ -10,7 +10,7 @@ function createApp(configOrPath) {
         pwd: process.cwd(),
         cwd: process.cwd(),
         views: 'views',
-        viewEngine: undefined, //'pug',
+        viewEngine: undefined,
         publicFolders: ['public'],
         useSessionFileStore: false,
         useSQliteFileStore: false,
@@ -33,6 +33,7 @@ function createApp(configOrPath) {
     }
     var bodyParser = require('body-parser');
     var app = express();
+    app.otto_config = config;
     if (config.serveFavicon) {
         let favicon = require('serve-favicon');
         // app.use(favicon);
