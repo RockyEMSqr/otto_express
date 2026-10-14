@@ -19,12 +19,12 @@ async function router(app, conf = {}) {
     if (dev) {
         await mountDir(app, conf.controllers, conf);
         return async (req, res, next) => {
-            await mountDir(app, path.join(cwd, conf.controllers), conf);
+            await mountDir(app, conf.controllers, conf);
             next();
         };
     }
     else {
-        await mountDir(app, path.join(cwd, conf.controllers), conf);
+        await mountDir(app, conf.controllers, conf);
         return (req, res, next) => {
             /**
              * hits when app doesn't handle route.
