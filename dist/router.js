@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupController = exports.SetupArea = exports.router = void 0;
+exports.router = router;
+exports.SetupArea = SetupArea;
+exports.setupController = setupController;
 const utils = require("./utils");
 const path = require("path");
 const controller_1 = require("./controller");
@@ -33,7 +35,6 @@ async function router(app, conf = {}) {
         };
     }
 }
-exports.router = router;
 async function mountDir(app, dir, opts) {
     var mods = opts.modules || await utils.rrequireDir(dir);
     for (let key in mods) {
@@ -41,8 +42,8 @@ async function mountDir(app, dir, opts) {
         for (let mkey in mod) {
             let mem = mod[mkey];
             if (mem && mem.constructor) {
-                let mount = controller_1.getAutoMount(mem);
-                let controller = controller_1.getController(mem);
+                let mount = (0, controller_1.getAutoMount)(mem);
+                let controller = (0, controller_1.getController)(mem);
                 if (mount || controller) {
                     setupController(app, mem, opts.area, opts.middleware);
                 }
@@ -57,7 +58,7 @@ function SetupArea(app, dir, area, ...preHanders) {
         for (let mkey in mod) {
             let mem = mod[mkey];
             if (mem && mem.constructor) {
-                let mount = controller_1.getAutoMount(mem);
+                let mount = (0, controller_1.getAutoMount)(mem);
                 if (mount) {
                     setupController(app, mem, area, preHanders);
                 }
@@ -65,7 +66,6 @@ function SetupArea(app, dir, area, ...preHanders) {
         }
     }
 }
-exports.SetupArea = SetupArea;
 function trimLeadingSlash(r) {
     if (r.substr(0, 1) == '/') {
         r = r.substr(1, r.length);
@@ -87,9 +87,9 @@ function setupController(app, C, area, ...preHandlers) {
         if (method === C) {
             continue;
         }
-        let actionRoute = controller_1.getRoute(ctrl, name);
-        let controllerRoute = controller_1.getRoute(C);
-        let httpMethods = controller_1.getHttpMethods(ctrl, name);
+        let actionRoute = (0, controller_1.getRoute)(ctrl, name);
+        let controllerRoute = (0, controller_1.getRoute)(C);
+        let httpMethods = (0, controller_1.getHttpMethods)(ctrl, name);
         var route = '/';
         if (area) {
             route += `${area}/`;
@@ -121,7 +121,7 @@ function setupController(app, C, area, ...preHandlers) {
         if (preHandlers) {
             allMiddleware = allMiddleware.concat(preHandlers);
         }
-        let methodMiddleware = controller_1.getMiddleWare(ctrl, name);
+        let methodMiddleware = (0, controller_1.getMiddleWare)(ctrl, name);
         if (methodMiddleware) {
             if (Array.isArray(methodMiddleware)) {
                 allMiddleware = allMiddleware.concat(...methodMiddleware);
@@ -130,7 +130,7 @@ function setupController(app, C, area, ...preHandlers) {
                 allMiddleware = allMiddleware.concat(methodMiddleware);
             }
         }
-        let controllerMiddleware = controller_1.getMiddleWare(C);
+        let controllerMiddleware = (0, controller_1.getMiddleWare)(C);
         if (controllerMiddleware) {
             if (Array.isArray(controllerMiddleware)) {
                 allMiddleware = allMiddleware.concat(...controllerMiddleware);
@@ -160,5 +160,4 @@ function setupController(app, C, area, ...preHandlers) {
         }
     }
 }
-exports.setupController = setupController;
 //# sourceMappingURL=router.js.map

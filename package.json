@@ -8,7 +8,7 @@
   "scripts": {
     "test": "DEBUG=1 node --inspect -r esbuild-register test/app/server.ts",
     "test:swc": "node --inspect -r @swc/register test/app/server.ts",
-    "build": "tsc -p tsconfig_bundle.json",
+    "build": "npx tsc -p tsconfig_bundle.json",
     "test:utils": "node -r esbuild-register test/utils.test.ts",
     "test:router-modules": "node -r esbuild-register test/router-modules.test.ts",
     "test:unit": "npm run test:utils && npm run test:router-modules"
@@ -25,16 +25,19 @@
   },
   "homepage": "https://github.com/RockyEMSqr/otto_express#readme",
   "dependencies": {
-    "@types/express": "^4.17.13",
-    "express": "^4.21.2",
+    "express": "^5.3.0",
     "express-session": "^1.17.2",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.6",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
     "esbuild": "^0.14.10",
     "esbuild-register": "^3.3.1",
     "htm": "^3.1.0",
-    "preact-render-to-string": "^5.1.19"
+    "preact-render-to-string": "^5.1.19",
+    "typescript": "^7.0.2"
   },
   "optionalDependencies": {
     "connect-sqlite3": "^0.9.15"

@@ -1,9 +1,8 @@
-import express = require("express");
-import path = require('path')
-// import * as debugModule from 'debug';
-import http = require('http');
+import express from "express";
+import * as path from "path";
+import * as http from "http";
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
-export type facile_express_app = express.Express & { start(): void, otto_config:facile_express_config }
+export type facile_express_app = express.Express & { start(): void, otto_config: facile_express_config }
 interface facile_express_config {
 	views?: string;
 	viewEngine?: string;

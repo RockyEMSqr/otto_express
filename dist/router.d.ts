@@ -1,5 +1,5 @@
 import { facile_express_app } from './express';
-export declare type ControllerModules = Record<string, any>;
+export type ControllerModules = Record<string, any>;
 export interface RouterConfig {
     controllers?: string;
     middleware?: any[];

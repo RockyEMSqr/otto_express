@@ -9,7 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaginatedAPIController = exports.JSONNotNamedController = exports.JSONController = exports.CRUDController = exports.getMiddleWare = exports.Middleware = exports.Delete = exports.Put = exports.Post = exports.Get = exports.getHttpMethods = exports.getHttpMethod = exports.getRoute = exports.Route = exports.getAutoMount = exports.AutoMount = exports.getController = exports.Controller = void 0;
+exports.PaginatedAPIController = exports.JSONNotNamedController = exports.JSONController = exports.CRUDController = void 0;
+exports.Controller = Controller;
+exports.getController = getController;
+exports.AutoMount = AutoMount;
+exports.getAutoMount = getAutoMount;
+exports.Route = Route;
+exports.getRoute = getRoute;
+exports.getHttpMethod = getHttpMethod;
+exports.getHttpMethods = getHttpMethods;
+exports.Get = Get;
+exports.Post = Post;
+exports.Put = Put;
+exports.Delete = Delete;
+exports.Middleware = Middleware;
+exports.getMiddleWare = getMiddleWare;
 require("reflect-metadata");
 const RouteKey = 'Route';
 const ControllerKey = 'Contoller';
@@ -26,31 +40,25 @@ function Controller(route) {
         Reflect.defineMetadata(ControllerKey, true, target, propertyKey);
     };
 }
-exports.Controller = Controller;
 function getController(target) {
     return Reflect.getMetadata(ControllerKey, target);
 }
-exports.getController = getController;
 const AutoMountKey = 'AutoMount';
 function AutoMount() {
     return Reflect.metadata(AutoMountKey, true);
 }
-exports.AutoMount = AutoMount;
 function getAutoMount(target) {
     return Reflect.getMetadata(AutoMountKey, target);
 }
-exports.getAutoMount = getAutoMount;
 function Route(route) {
     return Reflect.metadata(RouteKey, route);
 }
-exports.Route = Route;
 function getRoute(target, propKey) {
     if (target && propKey) {
         return Reflect.getMetadata(RouteKey, target, propKey);
     }
     return Reflect.getMetadata(RouteKey, target);
 }
-exports.getRoute = getRoute;
 const methodKey = 'httpMethod';
 function setHttpMethodMeta(verb, target, key) {
     const existing = Reflect.getMetadata(methodKey, target, key);
@@ -61,12 +69,10 @@ function getHttpMethod(target, propKey) {
     const methods = getHttpMethods(target, propKey);
     return methods[0];
 }
-exports.getHttpMethod = getHttpMethod;
 function getHttpMethods(target, propKey) {
     const methods = Reflect.getMetadata(methodKey, target, propKey);
     return Array.isArray(methods) ? methods : methods ? [methods] : [];
 }
-exports.getHttpMethods = getHttpMethods;
 // Http Methods
 function Get(route) {
     return function (target, propertyKey, descriptor) {
@@ -74,28 +80,24 @@ function Get(route) {
         setRoute(route, target, propertyKey);
     };
 }
-exports.Get = Get;
 function Post(route) {
     return function (target, propertyKey, descriptor) {
         setHttpMethodMeta('post', target, propertyKey);
         setRoute(route, target, propertyKey);
     };
 }
-exports.Post = Post;
 function Put(route) {
     return function (target, propertyKey, descriptor) {
         setHttpMethodMeta('put', target, propertyKey);
         setRoute(route, target, propertyKey);
     };
 }
-exports.Put = Put;
 function Delete(route) {
     return function (target, propertyKey, descriptor) {
         setHttpMethodMeta('delete', target, propertyKey);
         setRoute(route, target, propertyKey);
     };
 }
-exports.Delete = Delete;
 const middlewareKey = 'MIDDLEWARE';
 function setMiddleware(middleware) {
     return function (target, propertyKey, descriptor) {
@@ -105,14 +107,12 @@ function setMiddleware(middleware) {
 function Middleware(middleware) {
     return setMiddleware(middleware);
 }
-exports.Middleware = Middleware;
 function getMiddleWare(target, propKey) {
     if (target && propKey) {
         return Reflect.getMetadata(middlewareKey, target, propKey);
     }
     return Reflect.getMetadata(middlewareKey, target);
 }
-exports.getMiddleWare = getMiddleWare;
 class CRUDController {
     constructor() {
         this.objName = "obj";
@@ -135,6 +135,7 @@ class CRUDController {
         res.redirect('./');
     }
 }
+exports.CRUDController = CRUDController;
 __decorate([
     Get('/'),
     __metadata("design:type", Function),
@@ -159,7 +160,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], CRUDController.prototype, "_post", null);
-exports.CRUDController = CRUDController;
 class JSONController {
     constructor() {
         this.objName = "obj";
@@ -192,6 +192,7 @@ class JSONController {
         res.json({ [this.objName]: obj });
     }
 }
+exports.JSONController = JSONController;
 __decorate([
     Get('/'),
     __metadata("design:type", Function),
@@ -216,7 +217,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], JSONController.prototype, "_put", null);
-exports.JSONController = JSONController;
 /**
  * Like JSON Controller but response is just data not {objname:data}
  */
@@ -248,6 +248,7 @@ class JSONNotNamedController {
         res.json(obj);
     }
 }
+exports.JSONNotNamedController = JSONNotNamedController;
 __decorate([
     Get('/'),
     __metadata("design:type", Function),
@@ -272,7 +273,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], JSONNotNamedController.prototype, "_put", null);
-exports.JSONNotNamedController = JSONNotNamedController;
 class PaginatedAPIController extends JSONNotNamedController {
     async paginate(req, res) {
         res.json(await this.getDS(req).paginate(this.populate, Number(req.query.page), {}, Number(req.query.pageSize)));
@@ -291,6 +291,7 @@ class PaginatedAPIController extends JSONNotNamedController {
         res.json({ ok: 1 });
     }
 }
+exports.PaginatedAPIController = PaginatedAPIController;
 __decorate([
     Get('/paginate'),
     __metadata("design:type", Function),
@@ -315,5 +316,4 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaginatedAPIController.prototype, "deleteThisOne", null);
-exports.PaginatedAPIController = PaginatedAPIController;
 //# sourceMappingURL=controller.js.map

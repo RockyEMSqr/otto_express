@@ -1,5 +1,6 @@
-import fs = require('fs');
-import path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { pathToFileURL } from 'url';
 
 export type ModuleLoader = (specifier: string) => Promise<any>;
@@ -88,7 +89,7 @@ export function requireDir(dir) {
     return ex;
 }
 export function walk(dir) {
-    var results = [];
+    var results: string[] = [];
     var list = fs.readdirSync(dir);
     list.forEach(function (file) {
         file = dir + '/' + file;
